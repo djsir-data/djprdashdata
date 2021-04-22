@@ -7,13 +7,16 @@ output: github_document
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
 )
 ```
 
 # djprdashdata
 
 <!-- badges: start -->
+[![R-CMD-check](https://github.com/djpr-data/djprdashdata/workflows/R-CMD-check/badge.svg)](https://github.com/djpr-data/djprdashdata/actions)
 <!-- badges: end -->
 
 `djprdashdata` downloads data from public sources, tidies it, and stores

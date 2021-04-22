@@ -1,0 +1,25 @@
+Package: djprdashdata
+Title: What the Package Does (One Line, Title Case)
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Matt",
+           family = "Cowgill",
+           role = c("aut", "cre"),
+           email = "mattcowgill@gmail.com",
+           comment = c(ORCID = "0000-0003-0422-3300"))
+Description: What the package does (one paragraph).
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Imports: 
+    magrittr,
+    purrr,
+    qs,
+    readabs (>= 0.4.8.902)
+Remotes: 
+    mattcowgill/readabs
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
