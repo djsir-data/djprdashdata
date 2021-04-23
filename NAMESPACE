@@ -2,6 +2,8 @@
 
 export("%>%")
 export(compress_and_save_df)
+export(download_abs_ts)
+export(download_data)
 export(load_data)
 export(read_abs_if_updated)
 importFrom(dplyr,"%>%")

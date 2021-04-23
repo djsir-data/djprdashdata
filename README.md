@@ -5,7 +5,7 @@
 
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/djpr-data/djprdashdata/workflows/R-CMD-check/badge.svg)](https://github.com/djpr-data/djprdashdata/actions)
+[![R-CMD-check](https://github.com/djpr-data/djprdashdata/workflows/R-CMD-check/badge.svg)](https://github.com/djpr-data/djprdashdata/actions)[![refresh-data](https://github.com/djpr-data/djprdashdata/workflows/refresh-data/badge.svg)](https://github.com/djpr-data/djprdashdata/actions)
 <!-- badges: end -->
 
 Package contains functions to download, tidy, and store data.

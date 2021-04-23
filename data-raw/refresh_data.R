@@ -1,5 +1,6 @@
 pkgload::load_all()
 
+# Load ABS time series
 abs_6202 <- read_abs_if_updated(cat_no = "6202.0")
 abs_6345 <- read_abs_if_updated(cat_no = "6345.0")
 
