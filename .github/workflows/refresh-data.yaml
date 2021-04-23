@@ -18,7 +18,7 @@ jobs:
       - name: Install packages
         run: Rscript -e 'install.packages("remotes", type = "binary")'
       - name: Install dependencies
-        run: Rscript -e 'remotes::install_deps(type = "binary")'
+        run: Rscript -e 'remotes::install_deps(type = "binary", force = FALSE, dependencies = TRUE)'
       - name: Get data
         run: Rscript -e 'source(here::here("data-raw", "refresh_data.R"), echo = TRUE)'
       - name: Render README
