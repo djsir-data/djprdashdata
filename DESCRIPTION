@@ -23,3 +23,5 @@ Imports:
     tidyr
 Remotes: 
     mattcowgill/readabs
+Depends: 
+    R (>= 2.10)

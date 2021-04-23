@@ -22,3 +22,5 @@ knitr::opts_chunk$set(
 Package contains functions to download, tidy, and store data.
 
 Data itself is in `data-raw`.
+
+Data last updated at `r readLines(here::here("data-raw", "last_refreshed.txt"))`.

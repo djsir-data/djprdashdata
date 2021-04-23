@@ -11,3 +11,5 @@
 Package contains functions to download, tidy, and store data.
 
 Data itself is in `data-raw`.
+
+Data last updated at 2021-04-23 14:58:06.
