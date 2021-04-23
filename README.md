@@ -7,3 +7,7 @@
 
 [![R-CMD-check](https://github.com/djpr-data/djprdashdata/workflows/R-CMD-check/badge.svg)](https://github.com/djpr-data/djprdashdata/actions)
 <!-- badges: end -->
+
+Package contains functions to download, tidy, and store data.
+
+Data itself is in `data-raw`.
