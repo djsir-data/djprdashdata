@@ -17,7 +17,7 @@ download_data <- function(path) {
 
   temp_qs <- tempfile(fileext = ".qs")
 
-  download.file(url = qs_url,
+  utils::download.file(url = qs_url,
                 destfile = temp_qs,
                 quiet = TRUE,
                 mode = "wb",
