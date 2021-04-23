@@ -8,6 +8,8 @@
 #'
 #' @param cat_no character, such as "6202.0" or "6345.0"
 #' @param path default is `file.path("data-raw", "abs-ts")`
+#' @param include_trend logical; default is `FALSE`. Should 'trend' data be
+#' included in the data frame?
 #' @param ... arguments passed to `readabs::read_abs()`
 #'
 #' @examples
@@ -20,6 +22,7 @@
 
 read_abs_if_updated <- function(cat_no = NULL,
                                 path = here::here("data-raw", "abs-ts"),
+                                include_trend = FALSE,
                                 ...) {
 
   temp_dir <- tempdir()
@@ -47,7 +50,8 @@ read_abs_if_updated <- function(cat_no = NULL,
     # No local file, download from ABS
     read_abs_and_save(cat_no = cat_no,
                       temp_path = temp_dir,
-                      qs_file = qs_file)
+                      qs_file = qs_file,
+                      include_trend = include_trend)
 
   } else {
     # Load local file, check if it's up to date
@@ -64,7 +68,8 @@ read_abs_if_updated <- function(cat_no = NULL,
       # Local file isn't up-to-date, so get a new one from ABS
       read_abs_and_save(cat_no = cat_no,
                         temp_path = temp_dir,
-                        qs_file = qs_file)
+                        qs_file = qs_file,
+                        include_trend = include_trend)
 
     } else {
       df <- local_df
@@ -83,6 +88,7 @@ read_abs_if_updated <- function(cat_no = NULL,
 read_abs_and_save <- function(cat_no,
                               temp_path,
                               qs_file,
+                              include_trend = FALSE,
                               ...) {
 
   df <- readabs::read_abs(cat_no = cat_no,
@@ -94,6 +100,11 @@ read_abs_and_save <- function(cat_no,
     dplyr::select(-.data$sheet_no,
                   -.data$table_title,
                   -.data$collection_month)
+
+  if (isFALSE(include_trend)) {
+    df <- df %>%
+      dplyr::filter(.data$series_type != "Trend")
+  }
 
   compress_and_save_df(df = df, qs_file = qs_file)
 }
