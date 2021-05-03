@@ -33,3 +33,8 @@ usethis::use_data(last_refreshed,
   internal = TRUE,
   overwrite = TRUE
 )
+
+usethis::use_data(lfs_lookup,
+                  internal = FALSE,
+                  overwrite = TRUE)
+

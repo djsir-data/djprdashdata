@@ -8,6 +8,7 @@ updated since the version stored locally}
 read_abs_if_updated(
   cat_no = NULL,
   path = here::here("data-raw", "abs-ts"),
+  include_orig_for_sadj = FALSE,
   include_trend = FALSE
 )
 }
@@ -15,6 +16,11 @@ read_abs_if_updated(
 \item{cat_no}{character, such as "6202.0" or "6345.0"}
 
 \item{path}{default is \code{file.path("data-raw", "abs-ts")}}
+
+\item{include_orig_for_sadj}{logical; default is \code{FALSE}. For series with
+'seasonally adjusted' data, should we retain the 'original' (unadjusted)
+data? \code{FALSE} by default. Note that even when this is \code{FALSE}, original data
+is retained for series that do not have seasonally adjusted data.}
 
 \item{include_trend}{logical; default is \code{FALSE}. Should 'trend' data be
 included in the data frame?}

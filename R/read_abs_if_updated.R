@@ -114,14 +114,14 @@ read_abs_and_save <- function(cat_no,
 
   if (isFALSE(include_orig_for_sadj)) {
     df <- df %>%
-      dplyr::group_by(series) %>%
-      dplyr::summarise(has_sadj = dplyr::if_else("Seasonally Adjusted" %in% series_type,
+      dplyr::group_by(.data$series) %>%
+      dplyr::summarise(has_sadj = dplyr::if_else("Seasonally Adjusted" %in% .data$series_type,
                                    TRUE,
                                    FALSE)) %>%
       dplyr::right_join(df, by = "series") %>%
-      dplyr::filter(series_type == "Seasonally Adjusted" |
-               has_sadj == FALSE) %>%
-      dplyr::select(-has_sadj)
+      dplyr::filter(.data$series_type == "Seasonally Adjusted" |
+                      .data$has_sadj == FALSE) %>%
+      dplyr::select(-.data$has_sadj)
   }
 
   compress_and_save_df(df = df, qs_file = qs_file)
