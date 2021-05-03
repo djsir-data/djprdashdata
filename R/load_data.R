@@ -17,12 +17,10 @@ load_data <- function(qs_file) {
   # Load
   df <- qs::qread(qs_file)
 
-  # Convert factors back to character, but leave nested
+  # Convert factors back to character
   df <- df %>%
-    # tidyr::unnest(.data$data) %>%
     dplyr::ungroup() %>%
-    dplyr::mutate_if(is.factor, as.character)  #%>%
-    # dplyr::nest_by(.data$table_no)
+    dplyr::mutate_if(is.factor, as.character)
 
   df
 }

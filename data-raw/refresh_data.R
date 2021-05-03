@@ -4,7 +4,7 @@ pkgload::load_all()
 abs_6202 <- read_abs_if_updated(cat_no = "6202.0")
 abs_6291 <- read_abs_if_updated(cat_no = "6291.0.55.001")
 abs_5368 <- read_abs_if_updated(cat_no = "5368.0")
-# abs_6345 <- read_abs_if_updated(cat_no = "6345.0")
+abs_6345 <- read_abs_if_updated(cat_no = "6345.0")
 
 # Save file containing time that this script was last run
 last_refreshed <- lubridate::with_tz(Sys.time(), tzone = "Australia/Melbourne")
