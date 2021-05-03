@@ -35,4 +35,5 @@ compress_and_save_df(df, "wpi.qs")
 # Then load the data
 loaded_df <- load_data("wpi.qs")
 }
+
 }

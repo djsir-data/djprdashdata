@@ -22,19 +22,21 @@
 #' # Then load the data
 #' loaded_df <- load_data("wpi.qs")
 #' }
-
+#'
 compress_and_save_df <- function(df, qs_file) {
 
   # Convert strings to factors
   df <- df %>%
-    dplyr::mutate_if(is.character,
-                     as.factor)
+    dplyr::mutate_if(
+      is.character,
+      as.factor
+    )
 
-  # Nest, so that each table is a row
-  df <- df %>%
-    dplyr::nest_by(.data$table_no)
+  # # Nest, so that each table is a row
+  # df <- df %>%
+  #   dplyr::nest_by(.data$table_no)
 
-  qs::qsave(x = df, file = qs_file)
+  qs::qsave(x = df, file = qs_file, preset = "high")
 
   invisible(TRUE)
 }

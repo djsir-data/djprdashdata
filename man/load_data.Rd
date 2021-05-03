@@ -2,23 +2,21 @@
 % Please edit documentation in R/load_data.R
 \name{load_data}
 \alias{load_data}
-\title{Load a nested data frame saved as a \code{qs} file}
+\title{Load a data frame saved as a \code{qs} file and convert factors to strings}
 \usage{
 load_data(qs_file)
 }
 \arguments{
-\item{qs_file}{The path, incl. filename and extension, to a \code{qs} file.
-File is presumed to contain a dataframe with a nested column called \code{data}.
-No checking is performed.}
+\item{qs_file}{The path, incl. filename and extension, to a \code{qs} file.}
 }
 \value{
-A nested tibble
+A tibble
 }
 \description{
-Load a nested data frame saved as a \code{qs} file
+Load a data frame saved as a \code{qs} file and convert factors to strings
 }
 \details{
-Any columns in the nested \code{data} column that are factors will be
+Any columns that are factors will be
 converted to character.
 
 Intended for use with dataframes saved using \code{compress_and_save_df()}.
@@ -27,4 +25,5 @@ Intended for use with dataframes saved using \code{compress_and_save_df()}.
 \dontrun{
 load_data("qs_file.qs")
 }
+
 }

@@ -17,6 +17,7 @@ Imports:
     dplyr (>= 1.0.5),
     here,
     purrr,
+    lubridate,
     qs,
     readabs (>= 0.4.8.902),
     rlang,
@@ -25,3 +26,6 @@ Remotes:
     mattcowgill/readabs
 Depends: 
     R (>= 2.10)
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3

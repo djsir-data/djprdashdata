@@ -17,13 +17,15 @@ download_data <- function(path) {
 
   temp_qs <- tempfile(fileext = ".qs")
 
-  utils::download.file(url = qs_url,
-                destfile = temp_qs,
-                quiet = TRUE,
-                mode = "wb",
-                cacheOK = FALSE)
+  utils::download.file(
+    url = qs_url,
+    destfile = temp_qs,
+    quiet = TRUE,
+    mode = "wb",
+    cacheOK = FALSE
+  )
 
-  df <- qs::qread(temp_qs)
+  df <- load_data(temp_qs)
 
   df
 }

@@ -8,8 +8,7 @@ updated since the version stored locally}
 read_abs_if_updated(
   cat_no = NULL,
   path = here::here("data-raw", "abs-ts"),
-  include_trend = FALSE,
-  ...
+  include_trend = FALSE
 )
 }
 \arguments{
@@ -19,8 +18,6 @@ read_abs_if_updated(
 
 \item{include_trend}{logical; default is \code{FALSE}. Should 'trend' data be
 included in the data frame?}
-
-\item{...}{arguments passed to \code{readabs::read_abs()}}
 }
 \description{
 Checks the latest observation date in a local ABS time series file; compares
