@@ -5,28 +5,25 @@
 \title{Filter a dataframe based on series ID}
 \usage{
 filter_lfs_data(
-  df = dash_data,
   indicator,
   series_type = "seasonally adjusted",
-  ...
+  ...,
+  df = dash_data
 )
 }
 \arguments{
-\item{df}{Data frame, presumed to contain a \code{series_id} column
-containing ABS Time Series IDs. Default is \code{dash_data}, the
-data frame used by {djprlabourdash}.}
-
 \item{indicator}{Indicator name, such as 'unemployment rate'.
 See \code{?find_lfs_series()} for possible values.}
 
 \item{series_type}{Default is 'seasonally adjusted'.}
 
 \item{...}{arguments passed to \code{find_lfs_series()} and used to
-filter \code{df}.}
-}
-\value{
-a data frame (tibble) filtered based on the filtering
-conditions specified in \code{...}
+filter \code{df}.
+#' @param df Data frame, presumed to contain a \code{series_id} column
+containing ABS Time Series IDs. Default is \code{dash_data}, the
+data frame used by {djprlabourdash}.
+#' @return a data frame (tibble) filtered based on the filtering
+conditions specified in \code{...}}
 }
 \description{
 Series ID found using \code{find_lfs_series()}

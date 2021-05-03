@@ -2,27 +2,28 @@
 #'
 #' Series ID found using `find_lfs_series()`
 #'
-#' @param df Data frame, presumed to contain a `series_id` column
-#' containing ABS Time Series IDs. Default is `dash_data`, the
-#' data frame used by {djprlabourdash}.
 #' @param indicator Indicator name, such as 'unemployment rate'.
 #' See `?find_lfs_series()` for possible values.
 #' @param series_type Default is 'seasonally adjusted'.
 #' @param ... arguments passed to `find_lfs_series()` and used to
 #' filter `df`.
-#' @return a data frame (tibble) filtered based on the filtering
+
+#' #' @param df Data frame, presumed to contain a `series_id` column
+#' containing ABS Time Series IDs. Default is `dash_data`, the
+#' data frame used by {djprlabourdash}.
+#' #' @return a data frame (tibble) filtered based on the filtering
 #' conditions specified in `...`
 #' @examples
 #' \dontrun{
 #' abs_6202 <- readabs::read_abs("6202.0", 5)
-#' filter_lfs_data(abs_6202, "unemployment rate", state = "victoria")
+#' filter_lfs_data("unemployment rate", state = "victoria", df = abs_6202)
 #' }
 #' @export
 
-filter_lfs_data <- function(df = dash_data,
-                            indicator,
+filter_lfs_data <- function(indicator,
                             series_type = "seasonally adjusted",
-                            ...) {
+                            ...,
+                            df = dash_data) {
 
   matching_ids <- find_lfs_series(indicator = indicator,
                                   series_type = series_type,
