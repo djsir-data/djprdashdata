@@ -23,7 +23,7 @@
 filter_lfs_data <- function(indicator,
                             series_type = "seasonally adjusted",
                             ...,
-                            df = .env$dash_data) {
+                            df = dash_data) {
 
   matching_ids <- find_lfs_series(indicator = indicator,
                                   series_type = series_type,
@@ -36,5 +36,5 @@ filter_lfs_data <- function(indicator,
   df %>%
     dplyr::filter(.data$series_id %in% .env$matching_ids) %>%
     tidyr::unnest(cols = data) %>%
-    ungroup()
+    dplyr::ungroup()
 }
