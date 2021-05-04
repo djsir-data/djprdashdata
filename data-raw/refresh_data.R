@@ -9,8 +9,9 @@ abs_5368 <- read_abs_if_updated(cat_no = "5368.0")
 abs_6345 <- read_abs_if_updated(cat_no = "6345.0")
 
 # Combine LFS data
-lfs_tables <- c("6202012",
-                "6202016"
+lfs_tables <- c("6202012"
+                # ,
+                # "6202016"
                 # "6202019",
                 # "6202023",
                 # "6202025",
