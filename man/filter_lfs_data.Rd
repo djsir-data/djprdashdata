@@ -8,7 +8,7 @@ filter_lfs_data(
   indicator,
   series_type = "seasonally adjusted",
   ...,
-  df = dash_data
+  df = .env$dash_data
 )
 }
 \arguments{
@@ -18,12 +18,16 @@ See \code{?find_lfs_series()} for possible values.}
 \item{series_type}{Default is 'seasonally adjusted'.}
 
 \item{...}{arguments passed to \code{find_lfs_series()} and used to
-filter \code{df}.
-#' @param df Data frame, presumed to contain a \code{series_id} column
-containing ABS Time Series IDs. Default is \code{dash_data}, the
-data frame used by {djprlabourdash}.
-#' @return a data frame (tibble) filtered based on the filtering
-conditions specified in \code{...}}
+filter \code{df}.}
+
+\item{df}{Data frame, presumed to be nested, and to
+contain a \code{series_id} column with ABS Time Series IDs and
+a \code{data} column that is nested. Default is \code{dash_data}, the
+data frame used by \code{{djprlabourdash}}.}
+}
+\value{
+a data frame (tibble) filtered based on the filtering
+conditions specified in \code{...}
 }
 \description{
 Series ID found using \code{find_lfs_series()}
@@ -31,6 +35,6 @@ Series ID found using \code{find_lfs_series()}
 \examples{
 \dontrun{
 abs_6202 <- readabs::read_abs("6202.0", 5)
-filter_lfs_data(abs_6202, "unemployment rate", state = "victoria")
+filter_lfs_data("unemployment rate", state = "victoria", df = abs_6202)
 }
 }

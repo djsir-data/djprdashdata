@@ -32,9 +32,9 @@ compress_and_save_df <- function(df, qs_file) {
       as.factor
     )
 
-  # # Nest, so that each table is a row
-  # df <- df %>%
-  #   dplyr::nest_by(.data$table_no)
+  # Nest, so that each table is a row
+  df <- df %>%
+    dplyr::nest_by(.data$series_id)
 
   qs::qsave(x = df, file = qs_file, preset = "high")
 

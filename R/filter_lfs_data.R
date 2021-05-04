@@ -7,11 +7,11 @@
 #' @param series_type Default is 'seasonally adjusted'.
 #' @param ... arguments passed to `find_lfs_series()` and used to
 #' filter `df`.
-
-#' #' @param df Data frame, presumed to contain a `series_id` column
-#' containing ABS Time Series IDs. Default is `dash_data`, the
-#' data frame used by {djprlabourdash}.
-#' #' @return a data frame (tibble) filtered based on the filtering
+#' @param df Data frame, presumed to be nested, and to
+#' contain a `series_id` column with ABS Time Series IDs and
+#' a `data` column that is nested. Default is `dash_data`, the
+#' data frame used by `{djprlabourdash}`.
+#' @return a data frame (tibble) filtered based on the filtering
 #' conditions specified in `...`
 #' @examples
 #' \dontrun{
@@ -23,7 +23,7 @@
 filter_lfs_data <- function(indicator,
                             series_type = "seasonally adjusted",
                             ...,
-                            df = dash_data) {
+                            df = .env$dash_data) {
 
   matching_ids <- find_lfs_series(indicator = indicator,
                                   series_type = series_type,
@@ -34,5 +34,7 @@ filter_lfs_data <- function(indicator,
   }
 
   df %>%
-    dplyr::filter(.data$series_id %in% .env$matching_ids)
+    dplyr::filter(.data$series_id %in% .env$matching_ids) %>%
+    tidyr::unnest(cols = data) %>%
+    ungroup()
 }

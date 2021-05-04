@@ -654,7 +654,7 @@ find_lfs_series <- function(indicator,
   is_equalish <- function(x, y) {
     x <- tolower(x)
     y <- tolower(y)
-    x == y
+    x %in% y
     # To make it less strict?
     # grepl(y, x)
   }

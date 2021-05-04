@@ -9,9 +9,8 @@ abs_5368 <- read_abs_if_updated(cat_no = "5368.0")
 abs_6345 <- read_abs_if_updated(cat_no = "6345.0")
 
 # Combine LFS data
-lfs_tables <- c("6202012"
-                # ,
-                # "6202016",
+lfs_tables <- c("6202012",
+                "6202016"
                 # "6202019",
                 # "6202023",
                 # "6202025",
@@ -34,7 +33,6 @@ abs_lfs <- abs_6291 %>%
 
 abs_lfs <- abs_lfs %>%
   group_by(series_id) %>%
-  # We only need one observation per series
   filter(
     # Where a series appears multiple times with different series descriptions,
     # keep the one with the longest description
