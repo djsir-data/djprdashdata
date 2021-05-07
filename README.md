@@ -20,4 +20,4 @@ The data itself is saved in `data-raw`.
 The `refresh_data.R` script is executed on a schedule using GitHub
 Actions.
 
-Data last updated at 2021-05-06 01:39:23 Melbourne time.
+Data last updated at 2021-05-07 00:28:57 Melbourne time.
