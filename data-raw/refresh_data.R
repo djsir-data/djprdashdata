@@ -173,6 +173,10 @@ abs_lfs <- abs_lfs %>%
   filter(table_no == min(table_no)) %>%
   ungroup()
 
+# Add in series that are 'missing' from the data and must be calculated,
+# such as part time employment at state level (calculated from total + full time)
+abs_lfs <- add_missing_data(abs_lfs)
+
 compress_and_save_df(abs_lfs,
                      here::here("data-raw", "abs-ts", "abs-lfs.qs"))
 
@@ -184,7 +188,7 @@ close(file_conn)
 
 # Lookup table for LFS series IDs -----
 # To re-create it from scratch, set `update_lfs_lookup` to `TRUE`
-update_lfs_lookup <- FALSE
+update_lfs_lookup <- TRUE
 if (update_lfs_lookup) {
   source(here::here(
     "data-raw",

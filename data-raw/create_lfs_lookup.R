@@ -594,4 +594,25 @@ lfs_lookup <- lfs_lookup %>%
 lfs_lookup <- lfs_lookup %>%
   mutate(sex = if_else(sex == "Persons", "", sex))
 
+# Add entries for data series that don't exist and that are added using
+# add_missing_data() - eg. part time emp at state level
+
+pt_emp <- tibble::tibble(
+  cat_no = "6202.0",
+  table_no = "6202012",
+  series = "Employed part-time ;  Persons ;  Victoria",
+  series_id = "pt_emp_vic",
+  series_type = "Seasonally Adjusted",
+  indicator = "Employed part-time",
+  state = "Victoria"
+)
+
+lfs_lookup <- bind_rows(lfs_lookup,
+                        pt_emp)
+
+lfs_lookup <- lfs_lookup %>%
+  dplyr::mutate(dplyr::across(dplyr::everything(),
+                              tidyr::replace_na,
+                              replace = ""))
+
 saveRDS(lfs_lookup, "data-raw/lfs_lookup.rds")
