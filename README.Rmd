@@ -24,7 +24,8 @@ the ABS and other public data sources.
 
 The `data-raw/refresh_data.R` file contains instructions to download and store various public data. 
 
-The data itself is saved in `data-raw`. The `refresh_data.R`
+The data itself is saved in `data-raw`. 
+The `refresh_data.R`
 script is executed on a schedule using GitHub Actions.
 
 Data last updated at `r readLines(here::here("data-raw", "last_refreshed.txt"))` 
