@@ -23,7 +23,7 @@
 #' loaded_df <- load_data("wpi.qs")
 #' }
 #'
-compress_and_save_df <- function(df, qs_file) {
+compress_and_save_df <- function(df, qs_file, nest = TRUE) {
 
   # Convert strings to factors
   df <- df %>%
@@ -33,8 +33,10 @@ compress_and_save_df <- function(df, qs_file) {
     )
 
   # Nest, so that each table is a row
-  df <- df %>%
-    dplyr::nest_by(.data$series_id)
+  if (isTRUE(nest)) {
+    df <- df %>%
+      dplyr::nest_by(.data$series_id)
+  }
 
   qs::qsave(x = df, file = qs_file, preset = "high")
 

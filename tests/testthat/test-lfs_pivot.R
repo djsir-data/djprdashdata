@@ -12,5 +12,4 @@ test_that("lfs_pivot functions work", {
 
   gm1 <- get_lfs_pivot("GM1", "labour-force-australia", path = temppath)
   expect_gt(nrow(gm1), 1e6)
-
 })

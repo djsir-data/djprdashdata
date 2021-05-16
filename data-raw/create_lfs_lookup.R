@@ -594,8 +594,9 @@ lfs_lookup <- lfs_lookup %>%
 lfs_lookup <- lfs_lookup %>%
   mutate(sex = if_else(sex == "Persons", "", sex))
 
-# Add entries for data series that don't exist and that are added using
-# add_missing_data() - eg. part time emp at state level
+# Add entries for data series that don't exist -----
+# and that are added using
+# add_missing_data() - eg. part time emp at state level = total - FT
 
 pt_emp <- tibble::tibble(
   cat_no = "6202.0",
@@ -607,12 +608,29 @@ pt_emp <- tibble::tibble(
   state = "Victoria"
 )
 
-lfs_lookup <- bind_rows(lfs_lookup,
-                        pt_emp)
+lfs_lookup <- bind_rows(
+  lfs_lookup,
+  pt_emp
+)
 
+# Add entries for data cubes ----
+lfs_pivot <- get_all_lfs_pivots()
+
+lfs_lookup <- lfs_pivot %>%
+  dplyr::group_by(dplyr::across(!dplyr::one_of(c("value",
+                                                 "date",
+                                                 "frequency",
+                                                 "unit",
+                                                 "data_type")))) %>%
+  dplyr::summarise() %>%
+  dplyr::ungroup() %>%
+  dplyr::bind_rows(lfs_lookup)
+
+# Replace NAs with "" ----
 lfs_lookup <- lfs_lookup %>%
   dplyr::mutate(dplyr::across(dplyr::everything(),
-                              tidyr::replace_na,
-                              replace = ""))
+    tidyr::replace_na,
+    replace = ""
+  ))
 
 saveRDS(lfs_lookup, "data-raw/lfs_lookup.rds")

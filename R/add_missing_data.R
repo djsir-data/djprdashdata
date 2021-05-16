@@ -26,10 +26,12 @@ add_part_time <- function(data) {
     dplyr::select(dplyr::all_of(c("series", "date", "value"))) %>%
     tidyr::pivot_wider(names_from = .data$series, values_from = .data$value) %>%
     dplyr::mutate(value = .data$`Employed total ;  Persons ;  > Victoria ;` -
-                    .data$`> Employed full-time ;  Persons ;  > Victoria ;`) %>%
+      .data$`> Employed full-time ;  Persons ;  > Victoria ;`) %>%
     dplyr::select(.data$date, .data$value) %>%
-    dplyr::mutate(series = "Employed part-time ;  Persons ;  Victoria",
-                  series_id = "pt_emp_vic")
+    dplyr::mutate(
+      series = "Employed part-time ;  Persons ;  Victoria",
+      series_id = "pt_emp_vic"
+    )
 
   out <- raw_df %>%
     dplyr::filter(.data$series_id == "A84423349V") %>%

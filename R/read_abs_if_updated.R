@@ -116,11 +116,12 @@ read_abs_and_save <- function(cat_no,
     df <- df %>%
       dplyr::group_by(.data$series) %>%
       dplyr::summarise(has_sadj = dplyr::if_else("Seasonally Adjusted" %in% .data$series_type,
-                                   TRUE,
-                                   FALSE)) %>%
+        TRUE,
+        FALSE
+      )) %>%
       dplyr::right_join(df, by = "series") %>%
       dplyr::filter(.data$series_type == "Seasonally Adjusted" |
-                      .data$has_sadj == FALSE) %>%
+        .data$has_sadj == FALSE) %>%
       dplyr::select(-.data$has_sadj)
   }
 
