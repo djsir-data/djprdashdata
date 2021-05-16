@@ -1,3 +1,55 @@
+#' Download and tidy data cube EQ03 from detailed Labour Force
+#' @noRd
+get_lfs_eq03 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
+                         all_states = FALSE) {
+  raw_pivot <- get_lfs_pivot(cube = "EQ03")
+
+  names(raw_pivot) <- c("date",
+                                    "sex",
+                                    "gcc_restofstate",
+                                    "industry",
+                                    "Employed full-time",
+                                    "Employed part-time",
+                                    "Number of hours actually worked in all jobs (employed full-time)",
+                                    "Number of hours actually worked in all jobs (employed part-time)")
+
+  tidy_pivot <- raw_pivot %>%
+    tidyr::pivot_longer(cols = !dplyr::one_of(c("date",
+                                         "sex",
+                                         "gcc_restofstate",
+                                         "industry")),
+                        names_to = "indicator",
+                        values_to = "value")
+
+  # Create series IDs
+  tidy_pivot <- tidy_pivot %>%
+    dplyr::mutate(series_id = paste(.data$sex,
+                                     .data$gcc_restofstate,
+                                     .data$industry,
+                                     .data$indicator,
+                                     sep = "_") %>% tolower(),
+                  series = paste(.data$indicator,
+                                 .data$gcc_restofstate,
+                                 .data$sex,
+                                 .data$industry,
+                                 sep = " ; "),
+                  series_type = "Original",
+                  table_no = "EQ03",
+                  data_type = "STOCK",
+                  frequency = "Month",
+                  unit = "000")
+
+  if (isFALSE(all_states)) {
+    tidy_pivot <- tidy_pivot %>%
+      filter(.data$gcc_restofstate %in% c(
+        "Greater Melbourne",
+        "Rest of Vic."
+      ))
+  }
+
+  tidy_pivot
+}
+
 #' Download and tidy ABS pivot cubes
 #'
 #' @export
@@ -35,6 +87,12 @@ get_lfs_pivot <- function(cube,
 tidy_lfs_pivot <- function(path,
                            sheet,
                            col_names) {
+
+  skip <- 3
+
+  if (!isTRUE(col_names)) {
+    skip <- skip + 1
+  }
 
   df <- readxl::read_excel(path = path,
                            sheet = sheet,

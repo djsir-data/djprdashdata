@@ -182,8 +182,16 @@ abs_lfs <- abs_lfs %>%
 # such as part time employment at state level (calculated from total + full time)
 abs_lfs <- add_missing_data(abs_lfs)
 
+
 compress_and_save_df(abs_lfs,
                      here::here("data-raw", "abs-ts", "abs-lfs.qs"))
+
+# Get pivot tables
+eq03 <- get_lfs_eq03()
+lfs_pivot <- bind_rows(eq03)
+compress_and_save_df(lfs_pivot,
+                     here::here("data-raw", "abs-ts", "abs-lfs-pivot.qs"))
+
 
 # Save file containing time that this script was last run
 last_refreshed <- lubridate::with_tz(Sys.time(), tzone = "Australia/Melbourne")
