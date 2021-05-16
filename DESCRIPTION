@@ -21,7 +21,8 @@ Imports:
     qs,
     readabs (>= 0.4.8.902),
     rlang,
-    tidyr
+    tidyr,
+    readxl
 Remotes: 
     mattcowgill/readabs
 Depends: 

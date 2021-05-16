@@ -15,12 +15,15 @@ add_missing_data <- function(data) {
 
 #' Function to add missing part-time employment numbers at state level
 #' Calculated based on totals and full time numbers
+#' @param data data frame
+#' @noRd
+
 add_part_time <- function(data) {
   raw_df <- data
 
   out <- data %>%
     dplyr::filter(.data$series_id %in% c("A84423349V", "A84423357V")) %>%
-    dplyr::select(all_of(c("series", "date", "value"))) %>%
+    dplyr::select(dplyr::all_of(c("series", "date", "value"))) %>%
     tidyr::pivot_wider(names_from = .data$series, values_from = .data$value) %>%
     dplyr::mutate(value = .data$`Employed total ;  Persons ;  > Victoria ;` -
                     .data$`> Employed full-time ;  Persons ;  > Victoria ;`) %>%
@@ -30,7 +33,7 @@ add_part_time <- function(data) {
 
   out <- raw_df %>%
     dplyr::filter(.data$series_id == "A84423349V") %>%
-    dplyr::select(-value, -series, -series_id) %>%
+    dplyr::select(-.data$value, -.data$series, -.data$series_id) %>%
     dplyr::right_join(out, by = "date")
 
   dplyr::bind_rows(raw_df, out)
