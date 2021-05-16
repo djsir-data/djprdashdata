@@ -191,8 +191,7 @@ lfs_pivot <- lfs_pivot %>%
                 table_no, data_type, frequency, unit)
 
 abs_lfs <- lfs_pivot %>%
-  bind_rows(lfs_pivot)
-
+  bind_rows(abs_lfs)
 
 compress_and_save_df(
   abs_lfs,
