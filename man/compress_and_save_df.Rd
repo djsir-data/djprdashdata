@@ -4,7 +4,7 @@
 \alias{compress_and_save_df}
 \title{Compress and save a data frame}
 \usage{
-compress_and_save_df(df, qs_file)
+compress_and_save_df(df, qs_file, nest = TRUE)
 }
 \arguments{
 \item{df}{A data frame that is presumed to contain a \code{table_no} column and
