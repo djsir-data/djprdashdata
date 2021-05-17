@@ -13,11 +13,9 @@ This R package contains functions to download, tidy, and store data from
 the ABS and other public data sources.
 
 The `data-raw/refresh_data.R` file contains instructions to download and
-store various public data.
-
-The data itself is saved in `data-raw`.
+store various public data. The data itself is saved in `data-raw`.
 
 The `refresh_data.R` script is executed on a schedule using GitHub
 Actions.
 
-Data last updated at 2021-05-17 15:35:29 Melbourne time.
+Data last updated at 2021-05-17 16:16:42 Melbourne time.
