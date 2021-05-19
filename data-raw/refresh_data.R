@@ -187,7 +187,9 @@ lfs_ids <- c("A84423349V",
              "A84423328J",
              "A84423300F",
              "A84423314V",
-             "A84423342C")
+             "A84423342C",
+             "A84423687K"
+             )
 
 
 
@@ -236,7 +238,7 @@ close(file_conn)
 
 # Lookup table for LFS series IDs -----
 # To re-create it from scratch, set `update_lfs_lookup` to `TRUE`
-update_lfs_lookup <- FALSE
+update_lfs_lookup <- T
 if (update_lfs_lookup) {
   source(here::here(
     "data-raw",
