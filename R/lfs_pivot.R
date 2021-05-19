@@ -14,9 +14,15 @@ get_all_lfs_pivots <- function(path = Sys.getenv("R_READABS_PATH", unset = tempd
     all_states = all_states
   )
 
+  lfs_um2 <- get_lfs_um2(
+    path = path,
+    all_states = all_states
+  )
+
   dplyr::bind_rows(
     lfs_lm1,
-    lfs_eq03
+    lfs_eq03,
+    lfs_um2
   )
 
 }
@@ -116,6 +122,64 @@ get_lfs_lm1 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
 
   tidy_pivot
 }
+
+#' Download and tidy data cube EQ03 from detailed Labour Force
+#' @noRd
+get_lfs_um2 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
+                        all_states = FALSE) {
+  raw_pivot <- get_lfs_pivot(cube = "UM2")
+
+  names(raw_pivot) <- c(
+    "date",
+    "duration",
+    "state",
+    "Unemployed total ('000)",
+    "Number of weeks searching for job ('000 Weeks)",
+    "Unemployed looked for full-time work ('000)",
+    "Unemployed looked for only part-time work ('000)"
+  )
+
+  if (isFALSE(all_states)) {
+    raw_pivot <- raw_pivot %>%
+      dplyr::filter(.data$state == "Victoria")
+  }
+
+  tidy_pivot <- raw_pivot %>%
+    tidyr::pivot_longer(
+      cols = !dplyr::one_of(c(
+        "date",
+        "state",
+        "duration"
+      )),
+      names_to = "indicator",
+      values_to = "value"
+    )
+
+  # Create series IDs
+  tidy_pivot <- tidy_pivot %>%
+    dplyr::mutate(
+      series_id = paste(.data$indicator,
+                        .data$state,
+                        .data$duration,
+                        sep = "_"
+      ) %>% tolower(),
+      series = paste(.data$indicator,
+                     .data$state,
+                     .data$duration,
+                     sep = " ; "
+      ),
+      series_type = "Original",
+      table_no = "UM2",
+      data_type = "STOCK",
+      frequency = "Month",
+      unit = "000",
+      cat_no = "6291.0.55.001"
+    )
+
+  tidy_pivot
+
+}
+
 
 #' Download and tidy data cube EQ03 from detailed Labour Force
 #' @noRd
