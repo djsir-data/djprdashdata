@@ -238,7 +238,7 @@ close(file_conn)
 
 # Lookup table for LFS series IDs -----
 # To re-create it from scratch, set `update_lfs_lookup` to `TRUE`
-update_lfs_lookup <- T
+update_lfs_lookup <- F
 if (update_lfs_lookup) {
   source(here::here(
     "data-raw",
