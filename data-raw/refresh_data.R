@@ -2,13 +2,7 @@ pkgload::load_all()
 library(dplyr)
 library(tidyr)
 
-# Load ABS time series
-abs_6202 <- read_abs_if_updated(cat_no = "6202.0")
-abs_6291 <- read_abs_if_updated(cat_no = "6291.0.55.001")
-abs_5368 <- read_abs_if_updated(cat_no = "5368.0")
-abs_6345 <- read_abs_if_updated(cat_no = "6345.0")
-
-# Combine LFS data
+# Define IDs of interest -----
 lfs_ids <- c("A84423349V",
              "A84423356T",
              "A84423355R",
@@ -189,9 +183,30 @@ lfs_ids <- c("A84423349V",
              "A84423314V",
              "A84423342C",
              "A84423687K"
-             )
+)
 
 
+# Load ABS time series
+abs_6202 <- read_abs_if_updated(cat_no = "6202.0",
+                                include_orig_for_sadj = TRUE)
+
+# abs_6291 <- read_abs_if_updated(cat_no = "6291.0.55.001",
+#                                 include_orig_for_sadj = TRUE,
+#                                 series = lfs_ids,
+#                                 include_trend = FALSE)
+
+abs_6291 <- readabs::read_abs("6291.0.55.001",
+                     "all",
+                     path = tempdir(),
+                     check_local = FALSE)
+
+abs_6291 <- abs_6291 %>%
+  dplyr::select(names(abs_6202))
+
+# abs_5368 <- read_abs_if_updated(cat_no = "5368.0")
+# abs_6345 <- read_abs_if_updated(cat_no = "6345.0")
+
+# Combine LFS data ----
 
 abs_lfs <- abs_6202 %>%
   filter(series_id %in% lfs_ids)
@@ -203,11 +218,13 @@ abs_lfs <- abs_6291 %>%
 
 abs_lfs <- abs_lfs %>%
   group_by(series_id) %>%
+  mutate(across(where(is.factor), as.character)) %>%
   filter(
     # Where a series appears multiple times with different series descriptions,
     # keep the one with the longest description
     nchar(series) == max(nchar(series))
   ) %>%
+  mutate(series = as.factor(series)) %>%
   # Where a Series ID appears in multiple tables, keep only the first
   filter(table_no == min(table_no)) %>%
   ungroup()
@@ -238,7 +255,7 @@ close(file_conn)
 
 # Lookup table for LFS series IDs -----
 # To re-create it from scratch, set `update_lfs_lookup` to `TRUE`
-update_lfs_lookup <- F
+update_lfs_lookup <- FALSE
 if (update_lfs_lookup) {
   source(here::here(
     "data-raw",
@@ -262,3 +279,4 @@ usethis::use_data(lfs_lookup,
   internal = FALSE,
   overwrite = TRUE
 )
+

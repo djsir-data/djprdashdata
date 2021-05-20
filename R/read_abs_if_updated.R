@@ -26,7 +26,8 @@
 read_abs_if_updated <- function(cat_no = NULL,
                                 path = here::here("data-raw", "abs-ts"),
                                 include_orig_for_sadj = FALSE,
-                                include_trend = FALSE) {
+                                include_trend = FALSE,
+                                series = NULL) {
   temp_dir <- tempdir()
   on.exit(unlink(temp_dir))
 
@@ -55,14 +56,16 @@ read_abs_if_updated <- function(cat_no = NULL,
       cat_no = cat_no,
       temp_path = temp_dir,
       qs_file = qs_file,
-      include_trend = include_trend
+      include_trend = include_trend,
+      include_orig_for_sadj = include_orig_for_sadj,
+      series = series
     )
   } else {
     # Load local file, check if it's up to date
     local_df <- local_result$result
 
-    # local_df <- local_df %>%
-    #   tidyr::unnest(cols = .data$data)
+    local_df <- local_df %>%
+      tidyr::unnest(cols = .data$data)
 
     max_local_date <- max(local_df$date)
 
@@ -74,12 +77,18 @@ read_abs_if_updated <- function(cat_no = NULL,
         cat_no = cat_no,
         temp_path = temp_dir,
         qs_file = qs_file,
-        include_trend = include_trend
+        include_trend = include_trend,
+        include_orig_for_sadj = include_orig_for_sadj,
+        series = series
       )
     } else {
       df <- local_df
     }
   }
+
+  df <- df %>%
+    dplyr::mutate_if(is.factor,
+                     as.character)
 
   return(df)
 }
@@ -93,9 +102,11 @@ read_abs_and_save <- function(cat_no,
                               temp_path,
                               qs_file,
                               include_orig_for_sadj = FALSE,
-                              include_trend = FALSE) {
+                              include_trend = FALSE,
+                              series = NULL) {
   df <- readabs::read_abs(
     cat_no = cat_no,
+    tables = "all",
     path = temp_path,
     check_local = FALSE
   )
@@ -123,6 +134,11 @@ read_abs_and_save <- function(cat_no,
       dplyr::filter(.data$series_type == "Seasonally Adjusted" |
         .data$has_sadj == FALSE) %>%
       dplyr::select(-.data$has_sadj)
+  }
+
+  if (!is.null(series)) {
+    df <- df %>%
+      filter(.data$series_id %in% .env$series)
   }
 
   compress_and_save_df(df = df, qs_file = qs_file)
