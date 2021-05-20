@@ -195,10 +195,12 @@ abs_6202 <- read_abs_if_updated(cat_no = "6202.0",
 #                                 series = lfs_ids,
 #                                 include_trend = FALSE)
 
-abs_6291 <- readabs::read_abs("6291.0.55.001",
-                     "all",
-                     path = tempdir(),
-                     check_local = FALSE)
+# abs_6291 <- readabs::read_abs("6291.0.55.001",
+#                      "all",
+#                      path = tempdir(),
+#                      check_local = FALSE)
+
+abs_6291 <- qs::qread("data-raw/abs-ts/6291-0-55-001.qs")
 
 abs_6291 <- abs_6291 %>%
   dplyr::select(names(abs_6202))
