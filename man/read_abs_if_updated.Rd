@@ -9,7 +9,8 @@ read_abs_if_updated(
   cat_no = NULL,
   path = here::here("data-raw", "abs-ts"),
   include_orig_for_sadj = FALSE,
-  include_trend = FALSE
+  include_trend = FALSE,
+  series = NULL
 )
 }
 \arguments{

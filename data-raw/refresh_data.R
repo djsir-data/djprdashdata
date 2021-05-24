@@ -2,6 +2,8 @@ pkgload::load_all()
 library(dplyr)
 library(tidyr)
 
+options(timeout = 120)
+
 # Define IDs of interest -----
 lfs_ids <- c("A84423349V",
              "A84423356T",

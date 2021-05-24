@@ -643,7 +643,6 @@ find_lfs_series <- function(indicator,
   )
 
   arg_list <- purrr::map(arg_list, tolower)
-  # arg_list <- purrr::map(arg_list, ~ match.arg(.x))
   arg_list <- purrr::set_names(
     arg_list,
     arg_vec
