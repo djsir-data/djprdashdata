@@ -9,11 +9,8 @@
 #' dl_and_unzip("labour-force-australia")
 #' }
 #'
-
 dl_and_unzip <- function(catalogue_string,
-                         dest_dir = file.path("data-raw", "raw-data", catalogue_string)
-                         ) {
-
+                         dest_dir = file.path("data-raw", "raw-data", catalogue_string)) {
   temp_dir <- tempdir()
   on.exit(unlink(temp_dir))
 
@@ -24,29 +21,35 @@ dl_and_unzip <- function(catalogue_string,
   options("timeout" = 5 * 60)
 
   # Get fragments of filenames to download
-  file_basenames <- readabs::search_files(string = ".zip",
-                                catalogue = catalogue_string) %>%
+  file_basenames <- readabs::search_files(
+    string = ".zip",
+    catalogue = catalogue_string
+  ) %>%
     basename()
 
   # Download files to temp_dir
-  files <- purrr::map_chr(.x = file_basenames,
-                 .f = readabs::download_abs_data_cube,
-                 catalogue_string = catalogue_string,
-                 path = temp_dir)
+  files <- purrr::map_chr(
+    .x = file_basenames,
+    .f = readabs::download_abs_data_cube,
+    catalogue_string = catalogue_string,
+    path = temp_dir
+  )
 
   is_pivot <- grepl("pivot", file_basenames, ignore.case = TRUE)
   is_pivot <- ifelse(is_pivot, "pivot", "time-series")
 
   dest_dirs <- file.path(dest_dir, is_pivot)
 
-  purrr::walk2(.x = files,
-               .y = dest_dirs,
-               .f = ~zip::unzip(zipfile = .x,
-                                overwrite = TRUE,
-                                junkpaths = FALSE,
-                                exdir = .y)
+  purrr::walk2(
+    .x = files,
+    .y = dest_dirs,
+    .f = ~ zip::unzip(
+      zipfile = .x,
+      overwrite = TRUE,
+      junkpaths = FALSE,
+      exdir = .y
+    )
   )
 
   return(TRUE)
 }
-

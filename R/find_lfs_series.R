@@ -1,4 +1,7 @@
 #' Look up the series ID for time series from the ABS Labour Force Survey
+#'
+#' Based on internal data object created using create_lfs_lookup()
+#'
 #' @return A character vector of ABS Time Series ID(s) that match your query
 #' @param indicator the indicator of interest, such as "unemployment rate". See
 #' `Details` for possible indicators.

@@ -241,12 +241,17 @@ abs_lfs <- abs_lfs %>%
 abs_lfs <- add_missing_data(abs_lfs)
 
 # Get pivot tables -------
-lfs_pivot <- get_all_lfs_pivots()
+lfs_pivot <- get_tidy_lfs_pivots()
 lfs_pivot <- lfs_pivot %>%
   dplyr::select(
     date, value, series_id, series, series_type,
     table_no, data_type, frequency, unit
   )
+
+compress_and_save_df(
+  lfs_pivot,
+  here::here("data-raw", "abs-ts", "lfs-pivots.qs")
+)
 
 abs_lfs <- lfs_pivot %>%
   bind_rows(abs_lfs)

@@ -6,8 +6,8 @@
 #' Victoria will be removed.
 #'
 #'
-get_all_lfs_pivots <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
-                               all_states = FALSE) {
+get_tidy_lfs_pivots <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
+                                all_states = FALSE) {
   lfs_eq03 <- get_lfs_eq03(
     path = path,
     all_states = all_states
@@ -284,6 +284,10 @@ get_lfs_pivot <- function(cube,
                           path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
                           sheet = "Data 1",
                           col_names = TRUE) {
+  user_timeout <- getOption("timeout")
+  on.exit(options("timeout" = user_timeout))
+  options("timeout" = 180)
+
   file <- readabs::download_abs_data_cube(
     catalogue_string = catalogue_string,
     cube = cube,

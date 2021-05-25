@@ -4,7 +4,8 @@ test_that("dl_and_unzip downloads and unzips", {
   ts_dir <- file.path(temp_excel_dir, "time-series")
 
   dl_and_unzip("labour-force-australia",
-               dest_dir = temp_excel_dir)
+    dest_dir = temp_excel_dir
+  )
 
   ts_files <- list.files(ts_dir, full.names = TRUE)
 
@@ -16,8 +17,10 @@ test_that("dl_and_unzip downloads and unzips", {
   expect_gt(min(file.size(ts_files)), 50000)
 
   # Test time series spreadsheets are in expected form
-  tidy_ts <- readabs::read_abs_local(filenames = list.files(ts_dir),
-                                     path = ts_dir)
+  tidy_ts <- readabs::read_abs_local(
+    filenames = list.files(ts_dir),
+    path = ts_dir
+  )
 
   expect_s3_class(tidy_ts, "tbl")
   expect_gt(nrow(tidy_ts), 2000000)
