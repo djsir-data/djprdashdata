@@ -4,6 +4,19 @@ library(tidyr)
 
 options(timeout = 120)
 
+# Load LFS data -----
+
+# Switch to TRUE to load time series from `manual-time-series` subdirs
+load_manual <- FALSE
+
+if (isFALSE(load_manual)) {
+  abs_6202 <- dl_and_read("labour-force-australia")
+  abs_6291 <- dl_and_read("labour-force-australia-detailed")
+} else {
+  abs_6202 <- read_abs_local_dir(here::here("data-raw", "raw-data", "labour-force-australia", "manual-time-series"))
+  abs_6291 <- read_abs_local_dir(here::here("data-raw", "raw-data", "labour-force-australia-detailed", "manual-time-series"))
+}
+
 # Define IDs of interest -----
 lfs_ids <- c(
   "A84423349V",
@@ -189,29 +202,6 @@ lfs_ids <- c(
 )
 
 
-# Load ABS time series
-abs_6202 <- read_abs_if_updated(
-  cat_no = "6202.0",
-  include_orig_for_sadj = TRUE
-)
-
-# abs_6291 <- read_abs_if_updated(cat_no = "6291.0.55.001",
-#                                 include_orig_for_sadj = TRUE,
-#                                 series = lfs_ids,
-#                                 include_trend = FALSE)
-
-# abs_6291 <- readabs::read_abs("6291.0.55.001",
-#                      "all",
-#                      path = tempdir(),
-#                      check_local = FALSE)
-
-abs_6291 <- qs::qread("data-raw/abs-ts/6291-0-55-001.qs")
-
-abs_6291 <- abs_6291 %>%
-  dplyr::select(names(abs_6202))
-
-# abs_5368 <- read_abs_if_updated(cat_no = "5368.0")
-# abs_6345 <- read_abs_if_updated(cat_no = "6345.0")
 
 # Combine LFS data ----
 
@@ -223,9 +213,12 @@ abs_lfs <- abs_6291 %>%
     !series_id %in% abs_lfs$series_id) %>%
   bind_rows(abs_lfs)
 
+abs_lfs <- reduce_ts_df(abs_lfs,
+                        include_trend = FALSE,
+                        include_orig_for_sadj = TRUE)
+
 abs_lfs <- abs_lfs %>%
   group_by(series_id) %>%
-  mutate(across(where(is.factor), as.character)) %>%
   filter(
     # Where a series appears multiple times with different series descriptions,
     # keep the one with the longest description
@@ -242,13 +235,14 @@ abs_lfs <- add_missing_data(abs_lfs)
 
 # Get pivot tables -------
 lfs_pivot <- get_tidy_lfs_pivots()
+
 lfs_pivot <- lfs_pivot %>%
   dplyr::select(
     date, value, series_id, series, series_type,
     table_no, data_type, frequency, unit
   )
 
-compress_and_save_df(
+save_df(
   lfs_pivot,
   here::here("data-raw", "abs-ts", "lfs-pivots.qs")
 )
@@ -256,11 +250,12 @@ compress_and_save_df(
 abs_lfs <- lfs_pivot %>%
   bind_rows(abs_lfs)
 
-compress_and_save_df(
+save_df(
   abs_lfs,
   here::here("data-raw", "abs-ts", "abs-lfs.qs")
 )
 
+# Update last_refreshed -----
 # Save file containing time that this script was last run
 last_refreshed <- lubridate::with_tz(Sys.time(), tzone = "Australia/Melbourne")
 file_conn <- file(here::here("data-raw", "last_refreshed.txt"))
@@ -268,13 +263,22 @@ writeLines(as.character(Sys.time()), file_conn)
 close(file_conn)
 
 # Lookup table for LFS series IDs -----
-# To re-create it from scratch, set `update_lfs_lookup` to `TRUE`
+# To re-create it from scratch, set `update_up` to `TRUE`
 update_lfs_lookup <- FALSE
 if (update_lfs_lookup) {
-  source(here::here(
-    "data-raw",
-    "create_lfs_lookup.R"
-  ))
+  lfs_lookup <- create_lfs_lookup(
+    abs_6202,
+    abs_6291,
+    lfs_pivot
+  )
+
+  saveRDS(
+    lfs_lookup,
+    here::here(
+      "data-raw",
+      "lfs_lookup.rds"
+    )
+  )
 }
 
 lfs_lookup <- readRDS(here::here(

@@ -1,47 +1,58 @@
 #' Function to create a lookup table of cross-tabs in the ABS LFS
-#' @param df_6202 Dataframe containing all time series tables from ABS 6202 (Labour Force)
-#' @param df_6291 Dataframe containing all time series tables from ABS 6291.0.55.001 (Labour Force, Detailed)
+#' @param abs_6202_raw Dataframe containing all time series tables from ABS 6202 (Labour Force)
+#' @param abs_6291_raw Dataframe containing all time series tables from ABS 6291.0.55.001 (Labour Force, Detailed)
 #' @param lfs_pivots Dataframe containing tidied pivot tables
 #' @return Tibble with one row per unique ABS LFS series
 
-create_lfs_lookup <- function(df_6202,
-                              df_6291,
+create_lfs_lookup <- function(abs_6202_raw,
+                              abs_6291_raw,
                               lfs_pivots = get_tidy_lfs_pivots()) {
-  abs_6202_raw <- df_6202 %>%
-    tidyr::unnest(dplyr::everything())
 
-  abs_6291_raw <- df_6291 %>%
-    tidyr::unnest(dplyr::everything())
+  abs_6202_raw <- abs_6202_raw %>%
+    dplyr::mutate(cat_no <- "6202.0")
+
+  abs_6291_raw <- abs_6291_raw %>%
+    dplyr::mutate(cat_no = "6291.0.55.001")
 
   abs_lfs <- abs_6291_raw %>%
-    filter(!series_id %in% abs_6202_raw$series_id) %>%
-    bind_rows(abs_6202_raw) %>%
-    filter(series_id != "")
+    dplyr::filter(!.data$series_id %in% abs_6202_raw$series_id) %>%
+    dplyr::bind_rows(abs_6202_raw) %>%
+    dplyr::filter(.data$series_id != "")
 
   abs_lfs <- abs_lfs %>%
-    group_by(series_id) %>%
+    dplyr::group_by(.data$series_id) %>%
     # We only need one observation per series
-    filter(
-      date == max(date),
+    dplyr::filter(
+      date == max(.data$date),
       # Where a series appears multiple times with different series descriptions,
       # keep the one with the longest description
-      nchar(series) == max(nchar(series))
+      nchar(.data$series) == max(nchar(.data$series))
     ) %>%
     # Where a Series ID appears in multiple tables, keep only the first
-    filter(table_no == min(table_no)) %>%
-    ungroup() %>%
-    select(cat_no, starts_with("table"), starts_with("series"))
+    dplyr::filter(.data$table_no == min(.data$table_no)) %>%
+    dplyr::ungroup() %>%
+    dplyr::select(
+      .data$cat_no,
+      dplyr::starts_with("table"), dplyr::starts_with("series")
+    )
 
+  # abs_lfs <- abs_lfs %>%
+  #   dplyr::group_by(.data$series_id) %>%
+  #   dplyr::group_split() %>%
+  #   purrr::map(~ suppressWarnings(readabs::separate_series(.x))) %>%
+  #   dplyr::bind_rows()
+  #
   abs_lfs <- abs_lfs %>%
-    group_by(series_id) %>%
-    group_split() %>%
-    map(~ suppressWarnings(separate_series(.x))) %>%
-    bind_rows()
+    split(abs_lfs$series_id) %>%
+    purrr::map_dfr(~ suppressWarnings(readabs::separate_series(.x)))
 
   lfs_long <- abs_lfs %>%
-    pivot_longer(cols = c(starts_with("series_"), -series_id, -series_type)) %>%
-    filter(!is.na(value)) %>%
-    arrange(table_no)
+    tidyr::pivot_longer(cols = c(
+      dplyr::starts_with("series_"),
+      -.data$series_id, -.data$series_type
+    )) %>%
+    dplyr::filter(!is.na(.data$value)) %>%
+    dplyr::arrange(.data$table_no)
 
   age_values <- c(
     "20-24 years",
@@ -556,47 +567,58 @@ create_lfs_lookup <- function(df_6202,
   )
 
   lfs_lookup <- lfs_long %>%
-    mutate(category = case_when(
-      value %in% age_values ~ "age",
-      value %in% indicator_values ~ "indicator",
-      value %in% duration_of_unemp_values ~ "duration_of_unemp",
-      value %in% sa4_values ~ "sa4",
-      value %in% status_in_emp_values ~ "status_in_emp",
-      value %in% marital_status_values ~ "marital_status",
-      value %in% relship_in_hhold_values ~ "relship_in_hhold",
-      value %in% education_attendance_values ~ "education_attendance",
-      value %in% state_values ~ "state",
-      value %in% hours_values ~ "hours",
-      value %in% sex_values ~ "sex",
-      value %in% gcc_restofstate_values ~ "gcc_restofstate",
-      value %in% dependents_values ~ "dependents",
-      value %in% industry_values ~ "industry",
-      value %in% industr_subdiv_values ~ "industry_subdiv",
-      value %in% market_nonmarket_values ~ "market_nonmarket",
-      value %in% highest_ed ~ "highest_ed",
-      value %in% exp_future_emp_values ~ "exp_future_emp",
-      value %in% occupation_values ~ "occupation",
-      value %in% duration_with_emp_values ~ "duration_with_employer",
-      value %in% sector_values ~ "sector",
-      value %in% current_lfs_values ~ "current_lfs",
+    dplyr::mutate(category = dplyr::case_when(
+      .data$value %in% age_values ~ "age",
+      .data$value %in% indicator_values ~ "indicator",
+      .data$value %in% duration_of_unemp_values ~ "duration_of_unemp",
+      .data$value %in% sa4_values ~ "sa4",
+      .data$value %in% status_in_emp_values ~ "status_in_emp",
+      .data$value %in% marital_status_values ~ "marital_status",
+      .data$value %in% relship_in_hhold_values ~ "relship_in_hhold",
+      .data$value %in% education_attendance_values ~ "education_attendance",
+      .data$value %in% state_values ~ "state",
+      .data$value %in% hours_values ~ "hours",
+      .data$value %in% sex_values ~ "sex",
+      .data$value %in% gcc_restofstate_values ~ "gcc_restofstate",
+      .data$value %in% dependents_values ~ "dependents",
+      .data$value %in% industry_values ~ "industry",
+      .data$value %in% industr_subdiv_values ~ "industry_subdiv",
+      .data$value %in% market_nonmarket_values ~ "market_nonmarket",
+      .data$value %in% highest_ed ~ "highest_ed",
+      .data$value %in% exp_future_emp_values ~ "exp_future_emp",
+      .data$value %in% occupation_values ~ "occupation",
+      .data$value %in% duration_with_emp_values ~ "duration_with_employer",
+      .data$value %in% sector_values ~ "sector",
+      .data$value %in% current_lfs_values ~ "current_lfs",
       TRUE ~ NA_character_
     ))
 
 
   lfs_lookup <- lfs_lookup %>%
-    filter(!is.na(category)) %>%
-    select(cat_no, table_no, series, series_id, series_type, value, category) %>%
-    spread(key = category, value = value) %>%
-    mutate(across(everything(), ~ if_else(is.na(.x), "", .x)))
+    dplyr::filter(!is.na(.data$category)) %>%
+    dplyr::select(
+      .data$cat_no,
+      .data$table_no,
+      .data$series,
+      .data$series_id,
+      .data$series_type,
+      .data$value,
+      .data$category
+    ) %>%
+    tidyr::spread(key = .data$category, value = .data$value) %>%
+    dplyr::mutate(dplyr::across(
+      dplyr::everything(),
+      ~ dplyr::if_else(is.na(.x), "", .x)
+    ))
 
   lfs_lookup <- lfs_lookup %>%
-    mutate(sex = if_else(sex == "Persons", "", sex))
+    dplyr::mutate(sex = dplyr::if_else(.data$sex == "Persons", "", .data$sex))
 
   # Add entries for data series that don't exist -----
   # and that are added using
   # add_missing_data() - eg. part time emp at state level = total - FT
 
-  pt_emp <- tibble::tibble(
+  pt_emp <- data.frame(
     cat_no = "6202.0",
     table_no = "6202012",
     series = "Employed part-time ;  Persons ;  Victoria",
@@ -606,13 +628,13 @@ create_lfs_lookup <- function(df_6202,
     state = "Victoria"
   )
 
-  lfs_lookup <- bind_rows(
+  lfs_lookup <- dplyr::bind_rows(
     lfs_lookup,
     pt_emp
   )
 
   # Add entries for data cubes ----
-  lfs_pivot <- get_tidy_lfs_pivots()
+  lfs_pivot <- lfs_pivots
 
   lfs_lookup <- lfs_pivot %>%
     dplyr::group_by(dplyr::across(!dplyr::one_of(c(

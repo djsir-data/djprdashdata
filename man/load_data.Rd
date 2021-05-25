@@ -19,7 +19,7 @@ Load a data frame saved as a \code{qs} file and convert factors to strings
 Any columns that are factors will be
 converted to character.
 
-Intended for use with dataframes saved using \code{compress_and_save_df()}.
+Intended for use with dataframes saved using \code{save_df()}.
 }
 \examples{
 \dontrun{

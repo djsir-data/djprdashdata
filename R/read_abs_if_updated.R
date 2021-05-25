@@ -14,8 +14,6 @@
 #' is retained for series that do not have seasonally adjusted data.
 #' @param include_trend logical; default is `FALSE`. Should 'trend' data be
 #' included in the data frame?
-#' @param series `NULL` by default. When non-null, should be a vector of
-#' ABS series IDs to include in the returned object.
 #'
 #' @examples
 #' \dontrun{
@@ -28,8 +26,7 @@
 read_abs_if_updated <- function(cat_no = NULL,
                                 path = here::here("data-raw", "abs-ts"),
                                 include_orig_for_sadj = FALSE,
-                                include_trend = FALSE,
-                                series = NULL) {
+                                include_trend = FALSE) {
   temp_dir <- tempdir()
   on.exit(unlink(temp_dir))
 
@@ -59,8 +56,7 @@ read_abs_if_updated <- function(cat_no = NULL,
       temp_path = temp_dir,
       qs_file = qs_file,
       include_trend = include_trend,
-      include_orig_for_sadj = include_orig_for_sadj,
-      series = series
+      include_orig_for_sadj = include_orig_for_sadj
     )
   } else {
     # Load local file, check if it's up to date
@@ -80,8 +76,7 @@ read_abs_if_updated <- function(cat_no = NULL,
         temp_path = temp_dir,
         qs_file = qs_file,
         include_trend = include_trend,
-        include_orig_for_sadj = include_orig_for_sadj,
-        series = series
+        include_orig_for_sadj = include_orig_for_sadj
       )
     } else {
       df <- local_df
@@ -106,8 +101,7 @@ read_abs_and_save <- function(cat_no,
                               temp_path,
                               qs_file,
                               include_orig_for_sadj = FALSE,
-                              include_trend = FALSE,
-                              series = NULL) {
+                              include_trend = FALSE) {
   df <- readabs::read_abs(
     cat_no = cat_no,
     tables = "all",
@@ -115,6 +109,17 @@ read_abs_and_save <- function(cat_no,
     check_local = FALSE
   )
 
+  df <- reduce_ts_df(df = df,
+                     include_trend = include_trend,
+                     include_orig_for_sadj = include_orig_for_sadj)
+
+  save_df(df = df, qs_file = qs_file)
+  return(df)
+}
+
+reduce_ts_df <- function(df,
+                         include_trend,
+                         include_orig_for_sadj) {
   df <- df %>%
     dplyr::select(
       -.data$sheet_no,
@@ -131,20 +136,24 @@ read_abs_and_save <- function(cat_no,
     df <- df %>%
       dplyr::group_by(.data$series) %>%
       dplyr::summarise(has_sadj = dplyr::if_else("Seasonally Adjusted" %in% .data$series_type,
-        TRUE,
-        FALSE
+                                                 TRUE,
+                                                 FALSE
       )) %>%
       dplyr::right_join(df, by = "series") %>%
       dplyr::filter(.data$series_type == "Seasonally Adjusted" |
-        .data$has_sadj == FALSE) %>%
+                      .data$has_sadj == FALSE) %>%
       dplyr::select(-.data$has_sadj)
   }
 
-  if (!is.null(series)) {
-    df <- df %>%
-      dplyr::filter(.data$series_id %in% .env$series)
-  }
+  df
+}
 
-  compress_and_save_df(df = df, qs_file = qs_file)
-  return(df)
+#' Read all time series spreadsheets from a given directory
+#' @param dir Directory containing ABS time series spreadsheets
+#' @return A tbl_df
+#' @details uses `readabs::read_abs_local()`
+read_abs_local_dir <- function(dir) {
+  readabs::read_abs_local(filenames = list.files(dir),
+                          path = dir,
+                          use_fst = FALSE)
 }

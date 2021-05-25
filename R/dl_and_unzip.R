@@ -2,6 +2,7 @@
 #'
 #' @param catalogue_string Such as "labour-force-australia" or "labour-force-australia-detailed".
 #' See `?readabs::search_files()` for more.
+#' @param include_pivots when `FALSE`, pivot tables aren't downloaded
 #' @param dest_dir Path to directory to which ZIP contents should be extracted
 #'
 #' @examples
@@ -10,6 +11,7 @@
 #' }
 #'
 dl_and_unzip <- function(catalogue_string,
+                         include_pivots = FALSE,
                          dest_dir = file.path("data-raw", "raw-data", catalogue_string)) {
   temp_dir <- tempdir()
   on.exit(unlink(temp_dir))
@@ -26,6 +28,10 @@ dl_and_unzip <- function(catalogue_string,
     catalogue = catalogue_string
   ) %>%
     basename()
+
+  if (isFALSE(include_pivots)) {
+    file_basenames <- file_basenames[!grepl("pivot", file_basenames)]
+  }
 
   # Download files to temp_dir
   files <- purrr::map_chr(
@@ -51,5 +57,21 @@ dl_and_unzip <- function(catalogue_string,
     )
   )
 
-  return(TRUE)
+  invisible(return(dest_dir))
+}
+
+#' Download files with dl_and_unzip() and read using read_abs_local()
+#' Downloads a zip to a temp file, unzips the contents to `dest_dir`,
+#' loads the contents using `readabs::read_abs_local_dir()`
+#' @param catalogue_string eg. "labour-force-australia"
+#' @param dest_dir Directory in which
+dl_and_read <- function(catalogue_string,
+                        dest_dir = file.path("data-raw", "raw-data", catalogue_string)) {
+
+  dl_and_unzip(catalogue_string = catalogue_string,
+               include_pivots = FALSE,
+               dest_dir = dest_dir)
+
+  read_abs_local_dir(here::here(dest_dir, "time-series"))
+
 }

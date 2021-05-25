@@ -63,7 +63,7 @@ download_abs_ts <- function(cat_no) {
 #' @details Any columns that are factors will be
 #' converted to character.
 #'
-#' Intended for use with dataframes saved using `compress_and_save_df()`.
+#' Intended for use with dataframes saved using `save_df()`.
 #' @return A tibble
 #' @export
 #' @examples

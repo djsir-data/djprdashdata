@@ -6,12 +6,15 @@
 \usage{
 dl_and_unzip(
   catalogue_string,
+  include_pivots = FALSE,
   dest_dir = file.path("data-raw", "raw-data", catalogue_string)
 )
 }
 \arguments{
 \item{catalogue_string}{Such as "labour-force-australia" or "labour-force-australia-detailed".
 See \code{?readabs::search_files()} for more.}
+
+\item{include_pivots}{when \code{FALSE}, pivot tables aren't downloaded}
 
 \item{dest_dir}{Path to directory to which ZIP contents should be extracted}
 }

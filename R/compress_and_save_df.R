@@ -1,4 +1,4 @@
-#' Compress and save a data frame
+#' Save compressed data frame
 #'
 #' Converts any character columns in the data frame to factor, then nests the
 #' data frame (so there's one row per `table_no`), then saves
@@ -18,13 +18,13 @@
 #' \dontrun{
 #'
 #' df <- readabs::read_abs("6345.0")
-#' compress_and_save_df(df, "wpi.qs")
+#' save_df(df, "wpi.qs")
 #'
 #' # Then load the data
 #' loaded_df <- load_data("wpi.qs")
 #' }
 #'
-compress_and_save_df <- function(df, qs_file, nest = TRUE) {
+save_df <- function(df, qs_file, nest = TRUE) {
 
   # Convert strings to factors
   df <- df %>%
