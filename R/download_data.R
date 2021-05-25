@@ -40,6 +40,7 @@ download_data <- function(path, branch = "main") {
 
 #' Download and import a dataframe
 #' @param cat_no ABS catalogue number such as "6202.0"
+#' @param branch Name of the Github branch of this repo from which to download file
 #' @return A dataframe
 #' @details `download_abs_ts()` presumes that a file corresponding to the
 #' requested catalogue number is present in the GitHub repo for this package.

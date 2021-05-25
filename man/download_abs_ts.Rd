@@ -4,10 +4,12 @@
 \alias{download_abs_ts}
 \title{Download and import a dataframe}
 \usage{
-download_abs_ts(cat_no)
+download_abs_ts(cat_no, branch = "main")
 }
 \arguments{
 \item{cat_no}{ABS catalogue number such as "6202.0"}
+
+\item{branch}{Name of the Github branch of this repo from which to download file}
 }
 \value{
 A dataframe

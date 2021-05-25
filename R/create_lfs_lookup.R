@@ -36,12 +36,6 @@ create_lfs_lookup <- function(abs_6202_raw,
       dplyr::starts_with("table"), dplyr::starts_with("series")
     )
 
-  # abs_lfs <- abs_lfs %>%
-  #   dplyr::group_by(.data$series_id) %>%
-  #   dplyr::group_split() %>%
-  #   purrr::map(~ suppressWarnings(readabs::separate_series(.x))) %>%
-  #   dplyr::bind_rows()
-  #
   abs_lfs <- abs_lfs %>%
     split(abs_lfs$series_id) %>%
     purrr::map_dfr(~ suppressWarnings(readabs::separate_series(.x)))
