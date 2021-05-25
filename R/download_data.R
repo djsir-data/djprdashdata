@@ -48,12 +48,12 @@ download_data <- function(path, branch = "main") {
 #' download_abs_ts("6202.0")
 #' }
 #' @export
-download_abs_ts <- function(cat_no) {
+download_abs_ts <- function(cat_no, branch = "main") {
   cat_no <- gsub("\\.", "\\-", cat_no)
 
   path <- paste0("data-raw/abs-ts/", cat_no, ".qs")
 
-  download_data(path = path)
+  download_data(path = path, branch = branch)
 }
 
 #' Load a data frame saved as a `qs` file and convert factors to strings
