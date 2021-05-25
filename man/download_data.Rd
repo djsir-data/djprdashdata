@@ -4,12 +4,15 @@
 \alias{download_data}
 \title{Download file from the GitHub repo for this package}
 \usage{
-download_data(path)
+download_data(path, branch = "main")
 }
 \arguments{
 \item{path}{path + filename for a qs file incl. extension,
 with forward slashes, such as "data-raw/abs-ts/6202-0.qs". Path should
 be relative to the root directory of this package/repo.}
+
+\item{branch}{Github branch of this repo from which to download a file;
+default is \code{main}.}
 }
 \value{
 A dataframe

@@ -12,6 +12,8 @@ other columns.}
 
 \item{qs_file}{Path, incl. filename (with "\code{.qs}" extension) where data
 frame is saved.}
+
+\item{nest}{TRUE by default. If TRUE, file will be nested by \code{series_id}.}
 }
 \value{
 \code{TRUE} invisibly on success

@@ -3,6 +3,8 @@
 #' @param path path + filename for a qs file incl. extension,
 #' with forward slashes, such as "data-raw/abs-ts/6202-0.qs". Path should
 #' be relative to the root directory of this package/repo.
+#' @param branch Github branch of this repo from which to download a file;
+#' default is `main`.
 #' @examples
 #' \dontrun{
 #' download_data("data-raw/abs-ts/6202-0.qs")
@@ -10,10 +12,16 @@
 #' @return A dataframe
 #' @export
 
-download_data <- function(path) {
-  github_prefix <- "https://github.com/djpr-data/djprdashdata/blob/main/"
+download_data <- function(path, branch = "main") {
+  github_prefix <- "https://github.com/djpr-data/djprdashdata/blob/"
 
-  qs_url <- paste0(github_prefix, path, "?raw=true")
+  qs_url <- paste0(
+    github_prefix,
+    branch,
+    "/",
+    path,
+    "?raw=true"
+  )
 
   temp_qs <- tempfile(fileext = ".qs")
 
@@ -46,4 +54,31 @@ download_abs_ts <- function(cat_no) {
   path <- paste0("data-raw/abs-ts/", cat_no, ".qs")
 
   download_data(path = path)
+}
+
+#' Load a data frame saved as a `qs` file and convert factors to strings
+#'
+#' @param qs_file The path, incl. filename and extension, to a `qs` file.
+#'
+#' @details Any columns that are factors will be
+#' converted to character.
+#'
+#' Intended for use with dataframes saved using `compress_and_save_df()`.
+#' @return A tibble
+#' @export
+#' @examples
+#' \dontrun{
+#' load_data("qs_file.qs")
+#' }
+#'
+load_data <- function(qs_file) {
+  # Load
+  df <- qs::qread(qs_file)
+
+  # Convert factors back to character
+  df <- df %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate_if(is.factor, as.character)
+
+  df
 }

@@ -14,6 +14,8 @@
 #' is retained for series that do not have seasonally adjusted data.
 #' @param include_trend logical; default is `FALSE`. Should 'trend' data be
 #' included in the data frame?
+#' @param series `NULL` by default. When non-null, should be a vector of
+#' ABS series IDs to include in the returned object.
 #'
 #' @examples
 #' \dontrun{
@@ -87,8 +89,10 @@ read_abs_if_updated <- function(cat_no = NULL,
   }
 
   df <- df %>%
-    dplyr::mutate_if(is.factor,
-                     as.character)
+    dplyr::mutate_if(
+      is.factor,
+      as.character
+    )
 
   return(df)
 }
@@ -138,7 +142,7 @@ read_abs_and_save <- function(cat_no,
 
   if (!is.null(series)) {
     df <- df %>%
-      filter(.data$series_id %in% .env$series)
+      dplyr::filter(.data$series_id %in% .env$series)
   }
 
   compress_and_save_df(df = df, qs_file = qs_file)

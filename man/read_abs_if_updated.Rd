@@ -25,6 +25,9 @@ is retained for series that do not have seasonally adjusted data.}
 
 \item{include_trend}{logical; default is \code{FALSE}. Should 'trend' data be
 included in the data frame?}
+
+\item{series}{\code{NULL} by default. When non-null, should be a vector of
+ABS series IDs to include in the returned object.}
 }
 \description{
 Checks the latest observation date in a local ABS time series file; compares

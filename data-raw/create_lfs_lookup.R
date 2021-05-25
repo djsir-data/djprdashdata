@@ -617,11 +617,13 @@ lfs_lookup <- bind_rows(
 lfs_pivot <- get_all_lfs_pivots()
 
 lfs_lookup <- lfs_pivot %>%
-  dplyr::group_by(dplyr::across(!dplyr::one_of(c("value",
-                                                 "date",
-                                                 "frequency",
-                                                 "unit",
-                                                 "data_type")))) %>%
+  dplyr::group_by(dplyr::across(!dplyr::one_of(c(
+    "value",
+    "date",
+    "frequency",
+    "unit",
+    "data_type"
+  )))) %>%
   dplyr::summarise() %>%
   dplyr::ungroup() %>%
   dplyr::bind_rows(lfs_lookup)

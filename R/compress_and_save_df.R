@@ -8,6 +8,7 @@
 #' other columns.
 #' @param qs_file Path, incl. filename (with "`.qs`" extension) where data
 #' frame is saved.
+#' @param nest TRUE by default. If TRUE, file will be nested by `series_id`.
 #' @details Any character columns (other than `table_no`) will be saved as
 #' factors. Loading the data frame with `load_data()` converts factor columns back
 #' to character.
@@ -32,7 +33,7 @@ compress_and_save_df <- function(df, qs_file, nest = TRUE) {
       as.factor
     )
 
-  # Nest, so that each table is a row
+  # Nest, so that each table is a row (makes filtering faster downstream)
   if (isTRUE(nest)) {
     df <- df %>%
       dplyr::nest_by(.data$series_id)

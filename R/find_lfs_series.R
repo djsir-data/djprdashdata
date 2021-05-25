@@ -649,7 +649,7 @@ find_lfs_series <- function(indicator,
   )
 
   # Ignore case when testing for equality
-  is_equalish <- function(x, y) {
+  is_in <- function(x, y) {
     x <- tolower(x)
     y <- tolower(y)
     x %in% y
@@ -660,7 +660,7 @@ find_lfs_series <- function(indicator,
   lfs_lookup %>%
     dplyr::filter(dplyr::across(
       .cols = dplyr::all_of(arg_vec),
-      .fns = ~ is_equalish(.x, arg_list[[dplyr::cur_column()]])
+      .fns = ~ is_in(.x, arg_list[[dplyr::cur_column()]])
     )) %>%
     dplyr::pull(.data$series_id)
 }

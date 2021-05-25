@@ -10,6 +10,12 @@ get_all_lfs_pivots(
   all_states = FALSE
 )
 }
+\arguments{
+\item{path}{Path to directory in which to store downloaded file(s)}
+
+\item{all_states}{logical, \code{FALSE} by default. When \code{FALSE}, states other than
+Victoria will be removed.}
+}
 \description{
 Get all pivot tables for which functions have been created
 Need to manually add them
