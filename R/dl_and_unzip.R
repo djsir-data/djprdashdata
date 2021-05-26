@@ -72,6 +72,9 @@ dl_and_read <- function(catalogue_string,
                include_pivots = FALSE,
                dest_dir = dest_dir)
 
-  read_abs_local_dir(here::here(dest_dir, "time-series"))
+  ts_dir <- here::here(dest_dir, "time-series")
+  print("Loading files from ", )
+
+  read_abs_local_dir(ts_dir)
 
 }
