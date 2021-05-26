@@ -293,9 +293,6 @@ save_df(
   here::here("data-raw", "abs-ts", "lfs-pivots.qs")
 )
 
-file.exists(here::here("data-raw", "abs-ts", "lfs-pivots.qs"))
-print(here::here("data-raw", "abs-ts", "lfs-pivots.qs"))
-
 save_df(
   abs_lfs,
   here::here("data-raw", "abs-ts", "abs-lfs.qs")
@@ -314,8 +311,7 @@ update_lfs_lookup <- FALSE
 if (update_lfs_lookup) {
   lfs_lookup <- create_lfs_lookup(
     abs_6202,
-    abs_6291,
-    lfs_pivot
+    abs_6291
   )
 
   saveRDS(
