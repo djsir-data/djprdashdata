@@ -67,14 +67,14 @@ dl_and_unzip <- function(catalogue_string,
 #' @param dest_dir Directory in which
 dl_and_read <- function(catalogue_string,
                         dest_dir = file.path("data-raw", "raw-data", catalogue_string)) {
-
-  dl_and_unzip(catalogue_string = catalogue_string,
-               include_pivots = FALSE,
-               dest_dir = dest_dir)
+  dl_and_unzip(
+    catalogue_string = catalogue_string,
+    include_pivots = FALSE,
+    dest_dir = dest_dir
+  )
 
   ts_dir <- here::here(dest_dir, "time-series")
   message("Loading files from ", ts_dir)
 
   read_abs_local_dir(ts_dir)
-
 }

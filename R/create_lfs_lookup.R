@@ -7,7 +7,6 @@
 create_lfs_lookup <- function(abs_6202_raw,
                               abs_6291_raw,
                               lfs_pivots = get_tidy_lfs_pivots()) {
-
   abs_6202_raw <- abs_6202_raw %>%
     dplyr::mutate(cat_no <- "6202.0")
 
