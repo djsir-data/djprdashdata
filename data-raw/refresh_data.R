@@ -6,16 +6,29 @@ options(timeout = 120)
 
 # Load LFS data -----
 
-# Switch to TRUE to load time series from `manual-time-series` subdirs
-load_manual <- FALSE
+# Load files from ABS website using ZIP files
+abs_6202_new <- dl_and_read("labour-force-australia")
+abs_6291_new <- dl_and_read("labour-force-australia-detailed")
 
-if (isFALSE(load_manual)) {
-  abs_6202 <- dl_and_read("labour-force-australia")
-  abs_6291 <- dl_and_read("labour-force-australia-detailed")
-} else {
-  abs_6202 <- read_abs_local_dir(here::here("data-raw", "raw-data", "labour-force-australia", "manual-time-series"))
-  abs_6291 <- read_abs_local_dir(here::here("data-raw", "raw-data", "labour-force-australia-detailed", "manual-time-series"))
+# Load local Excel files from manual-time-series subdirs
+abs_6202_man <- read_abs_local_dir(here::here("data-raw", "raw-data", "labour-force-australia", "manual-time-series"))
+abs_6291_man <- read_abs_local_dir(here::here("data-raw", "raw-data", "labour-force-australia-detailed", "manual-time-series"))
+
+# Check to see which is most recent / complete
+new_or_man <- function(new_df, man_df) {
+  if (max(new_df$date) >= max(man_df$date)) {
+    df <- new_df
+  } else {
+    df <- old_df
+  }
+  df
 }
+
+abs_6202 <- new_or_man(abs_6202_new, abs_6291_man)
+abs_6291 <- new_or_man(abs_6291_new, abs_6291_man)
+
+rm(abs_6202_man, abs_6202_new,
+   abs_6291_man, abs_6291_new)
 
 # Define IDs of interest -----
 lfs_ids <- c(
@@ -242,13 +255,29 @@ lfs_pivot <- lfs_pivot %>%
     table_no, data_type, frequency, unit
   )
 
+abs_lfs <- lfs_pivot %>%
+  bind_rows(abs_lfs)
+
+# Perform checks and save ----
+
+test_results <- c(
+  all(lfs_ids %in% abs_lfs$series_id),
+  max(abs_lfs$date) - max(lfs_pivot$date) < 60,
+  Sys.Date() - max(abs_lfs$date) < 100,
+  nrow(lfs_pivot) > 51000,
+  nrow(abs_lfs) > 107000,
+  length(lfs_pivot) == 9,
+  length(abs_lfs) == 9
+)
+
+if (!all(test_results)) {
+  stop("Some test results failed. New data not saved.")
+}
+
 save_df(
   lfs_pivot,
   here::here("data-raw", "abs-ts", "lfs-pivots.qs")
 )
-
-abs_lfs <- lfs_pivot %>%
-  bind_rows(abs_lfs)
 
 save_df(
   abs_lfs,
