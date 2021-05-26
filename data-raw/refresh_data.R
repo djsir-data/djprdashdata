@@ -281,6 +281,9 @@ save_df(
   here::here("data-raw", "abs-ts", "lfs-pivots.qs")
 )
 
+file.exists(here::here("data-raw", "abs-ts", "lfs-pivots.qs"))
+print(here::here("data-raw", "abs-ts", "lfs-pivots.qs"))
+
 save_df(
   abs_lfs,
   here::here("data-raw", "abs-ts", "abs-lfs.qs")
