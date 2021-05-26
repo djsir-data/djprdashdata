@@ -259,7 +259,9 @@ abs_lfs <- lfs_pivot %>%
   bind_rows(abs_lfs)
 
 # Perform checks and save ----
+
 test_results <- c(
+  all(lfs_ids %in% abs_lfs$series_id),
   max(abs_lfs$date) - max(lfs_pivot$date) < 60,
   Sys.Date() - max(abs_lfs$date) < 100,
   nrow(lfs_pivot) > 51000,
