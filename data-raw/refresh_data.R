@@ -5,7 +5,7 @@ library(tidyr)
 options(timeout = 120)
 
 print(here::here())
-print("working dir is ", getwd())
+print(getwd())
 
 # Load LFS data -----
 
