@@ -2,11 +2,15 @@ name: refresh-data
 
 on:
   schedule:
-    - cron: '*/30 00-01-02 * * *'
+    - cron: '*/30 00-02 * * *'
   push:
     branches:
       - master
       - main
+  pull_request:
+    branches:
+      - main
+      - master
 
 jobs:
   refresh-data:

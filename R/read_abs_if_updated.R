@@ -109,9 +109,11 @@ read_abs_and_save <- function(cat_no,
     check_local = FALSE
   )
 
-  df <- reduce_ts_df(df = df,
-                     include_trend = include_trend,
-                     include_orig_for_sadj = include_orig_for_sadj)
+  df <- reduce_ts_df(
+    df = df,
+    include_trend = include_trend,
+    include_orig_for_sadj = include_orig_for_sadj
+  )
 
   save_df(df = df, qs_file = qs_file)
   return(df)
@@ -136,12 +138,12 @@ reduce_ts_df <- function(df,
     df <- df %>%
       dplyr::group_by(.data$series) %>%
       dplyr::summarise(has_sadj = dplyr::if_else("Seasonally Adjusted" %in% .data$series_type,
-                                                 TRUE,
-                                                 FALSE
+        TRUE,
+        FALSE
       )) %>%
       dplyr::right_join(df, by = "series") %>%
       dplyr::filter(.data$series_type == "Seasonally Adjusted" |
-                      .data$has_sadj == FALSE) %>%
+        .data$has_sadj == FALSE) %>%
       dplyr::select(-.data$has_sadj)
   }
 
@@ -153,7 +155,9 @@ reduce_ts_df <- function(df,
 #' @return A tbl_df
 #' @details uses `readabs::read_abs_local()`
 read_abs_local_dir <- function(dir) {
-  readabs::read_abs_local(filenames = list.files(dir),
-                          path = dir,
-                          use_fst = FALSE)
+  readabs::read_abs_local(
+    filenames = list.files(dir),
+    path = dir,
+    use_fst = FALSE
+  )
 }

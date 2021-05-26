@@ -10,25 +10,38 @@ options(timeout = 120)
 abs_6202_new <- dl_and_read("labour-force-australia")
 abs_6291_new <- dl_and_read("labour-force-australia-detailed")
 
-# Load local Excel files from manual-time-series subdirs
-abs_6202_man <- read_abs_local_dir(here::here("data-raw", "raw-data", "labour-force-australia", "manual-time-series"))
-abs_6291_man <- read_abs_local_dir(here::here("data-raw", "raw-data", "labour-force-australia-detailed", "manual-time-series"))
+# When running interactively, check local Excel downloads to see if they're more
+# recent/complete than those obtained from the ZIPs
 
-# Check to see which is most recent / complete
-new_or_man <- function(new_df, man_df) {
-  if (max(new_df$date) >= max(man_df$date)) {
-    df <- new_df
-  } else {
-    df <- old_df
+if (interactive()) {
+
+  # Load local Excel files from manual-time-series subdirs
+  abs_6202_man <- read_abs_local_dir(file.path("data-raw", "raw-data", "labour-force-australia", "manual-time-series"))
+  abs_6291_man <- read_abs_local_dir(file.path("data-raw", "raw-data", "labour-force-australia-detailed", "manual-time-series"))
+
+  # Check to see which is most recent / complete
+  new_or_man <- function(new_df, man_df) {
+    if (max(new_df$date) >= max(man_df$date)) {
+      df <- new_df
+    } else {
+      df <- old_df
+    }
+    df
   }
-  df
+
+  abs_6202 <- new_or_man(abs_6202_new, abs_6291_man)
+  abs_6291 <- new_or_man(abs_6291_new, abs_6291_man)
+
+  rm(
+    abs_6202_man,
+    abs_6291_man
+  )
+} else {
+  abs_6202 <- abs_6202_new
+  abs_6291 <- abs_6291_new
 }
 
-abs_6202 <- new_or_man(abs_6202_new, abs_6291_man)
-abs_6291 <- new_or_man(abs_6291_new, abs_6291_man)
-
-rm(abs_6202_man, abs_6202_new,
-   abs_6291_man, abs_6291_new)
+rm(abs_6202_new, abs_6291_new)
 
 # Define IDs of interest -----
 lfs_ids <- c(
@@ -227,8 +240,9 @@ abs_lfs <- abs_6291 %>%
   bind_rows(abs_lfs)
 
 abs_lfs <- reduce_ts_df(abs_lfs,
-                        include_trend = FALSE,
-                        include_orig_for_sadj = TRUE)
+  include_trend = FALSE,
+  include_orig_for_sadj = TRUE
+)
 
 abs_lfs <- abs_lfs %>%
   group_by(series_id) %>%
@@ -278,6 +292,9 @@ save_df(
   lfs_pivot,
   here::here("data-raw", "abs-ts", "lfs-pivots.qs")
 )
+
+file.exists(here::here("data-raw", "abs-ts", "lfs-pivots.qs"))
+print(here::here("data-raw", "abs-ts", "lfs-pivots.qs"))
 
 save_df(
   abs_lfs,

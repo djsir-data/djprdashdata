@@ -1,12 +1,12 @@
 test_that("read_abs_if_updated() works as expected", {
-
   skip_if_offline()
 
   temp_dir <- tempdir()
   on.exit(unlink(temp_dir))
 
   df <- read_abs_if_updated("6345.0",
-                      path = temp_dir)
+    path = temp_dir
+  )
 
   wpi_file <- file.path(temp_dir, "6345-0.qs")
 
@@ -28,10 +28,10 @@ test_that("read_abs_if_updated() works as expected", {
 
   # Check file is identical when loaded from disk
   df2 <- read_abs_if_updated("6345.0",
-                             path = temp_dir) %>%
+    path = temp_dir
+  ) %>%
     dplyr::arrange(series_id, date) %>%
     dplyr::relocate(names(df))
 
   expect_equal(df, df2)
-
 })

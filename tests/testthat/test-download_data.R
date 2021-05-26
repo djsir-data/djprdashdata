@@ -7,9 +7,10 @@ test_that("download_data() returns nested tibble", {
 
   unnested_dash <- tidyr::unnest(dash_data, cols = data)
 
-  expect_lt(Sys.Date() - max(unnested_dash$date),
-            100)
+  expect_lt(
+    Sys.Date() - max(unnested_dash$date),
+    100
+  )
   expect_gt(nrow(unnested_dash), 100000)
   expect_equal(length(unnested_dash), 9)
-
 })
