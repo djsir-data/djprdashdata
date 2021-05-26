@@ -73,7 +73,7 @@ dl_and_read <- function(catalogue_string,
                dest_dir = dest_dir)
 
   ts_dir <- here::here(dest_dir, "time-series")
-  print("Loading files from ", )
+  message("Loading files from ", ts_dir)
 
   read_abs_local_dir(ts_dir)
 
