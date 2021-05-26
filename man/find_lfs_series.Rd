@@ -83,7 +83,7 @@ find_lfs_series(
 A character vector of ABS Time Series ID(s) that match your query
 }
 \description{
-Look up the series ID for time series from the ABS Labour Force Survey
+Based on internal data object created using create_lfs_lookup()
 }
 \details{
 Arguments can be supplied with either upper or lower case. They

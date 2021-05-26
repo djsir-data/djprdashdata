@@ -1,9 +1,13 @@
 
 #' Get all pivot tables for which functions have been created
 #' Need to manually add them
+#' @param path Path to directory in which to store downloaded file(s)
+#' @param all_states logical, `FALSE` by default. When `FALSE`, states other than
+#' Victoria will be removed.
 #'
-get_all_lfs_pivots <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
-                               all_states = FALSE) {
+#'
+get_tidy_lfs_pivots <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
+                                all_states = FALSE) {
   lfs_eq03 <- get_lfs_eq03(
     path = path,
     all_states = all_states
@@ -24,26 +28,26 @@ get_all_lfs_pivots <- function(path = Sys.getenv("R_READABS_PATH", unset = tempd
     lfs_eq03,
     lfs_um2
   )
-
 }
 
 #' Download and tidy data cube LM1 from detailed labour force
 #' @noRd
 get_lfs_lm1 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
                         all_states = FALSE) {
-
   raw_pivot <- get_lfs_pivot("LM1")
 
-  names(raw_pivot) <- c("date",
-                        "sex",
-                        "age",
-                        "marital_status",
-                        "gcc_restofstate",
-                        "Employed full-time ('000)",
-                        "Employed part-time ('000)",
-                        "Unemployed looked for full-time work ('000)",
-                        "Unemployed looked for only part-time work ('000)",
-                        "Not in the labour force (NILF) ('000)")
+  names(raw_pivot) <- c(
+    "date",
+    "sex",
+    "age",
+    "marital_status",
+    "gcc_restofstate",
+    "Employed full-time ('000)",
+    "Employed part-time ('000)",
+    "Unemployed looked for full-time work ('000)",
+    "Unemployed looked for only part-time work ('000)",
+    "Not in the labour force (NILF) ('000)"
+  )
 
   tidy_pivot <- raw_pivot %>%
     tidyr::pivot_longer(
@@ -60,41 +64,57 @@ get_lfs_lm1 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
 
   if (isFALSE(all_states)) {
     tidy_pivot <- tidy_pivot %>%
-    # Drop non-Victoria
-      dplyr::filter(.data$gcc_restofstate %in% c("Greater Melbourne",
-                                               "Rest of Vic."))
+      # Drop non-Victoria
+      dplyr::filter(.data$gcc_restofstate %in% c(
+        "Greater Melbourne",
+        "Rest of Vic."
+      ))
   }
 
   # We want to aggregate up various categories - only interested in
   # broad age, employed + unemployed totals (not FT/PT split)
   tidy_pivot <- tidy_pivot %>%
-    dplyr::mutate(age = dplyr::case_when(age %in%
-                                           c("15-19 years",
-                                            "20-24 years") ~ "15-24",
-                                 age %in% c("25-29 years",
-                                            "30-34 years",
-                                            "35-39 years",
-                                            "40-44 years",
-                                            "45-49 years",
-                                            "50-54 years") ~ "25-54",
-                                 age %in% c("55-59 years",
-                                            "60-64 years",
-                                            "65 years and over") ~ "55+",
-                                 TRUE ~ NA_character_),
-                  indicator = dplyr::case_when(
-                    indicator %in% c("Employed full-time ('000)",
-                                     "Employed part-time ('000)") ~
-                      "Employed",
-                    grepl("Unemployed", .data$indicator) ~
-                      "Unemployed",
-                    grepl("NILF", .data$indicator) ~
-                      "NILF",
-                    TRUE ~ NA_character_
-                  ))
+    dplyr::mutate(
+      age = dplyr::case_when(
+        age %in%
+          c(
+            "15-19 years",
+            "20-24 years"
+          ) ~ "15-24",
+        age %in% c(
+          "25-29 years",
+          "30-34 years",
+          "35-39 years",
+          "40-44 years",
+          "45-49 years",
+          "50-54 years"
+        ) ~ "25-54",
+        age %in% c(
+          "55-59 years",
+          "60-64 years",
+          "65 years and over"
+        ) ~ "55+",
+        TRUE ~ NA_character_
+      ),
+      indicator = dplyr::case_when(
+        indicator %in% c(
+          "Employed full-time ('000)",
+          "Employed part-time ('000)"
+        ) ~
+        "Employed",
+        grepl("Unemployed", .data$indicator) ~
+        "Unemployed",
+        grepl("NILF", .data$indicator) ~
+        "NILF",
+        TRUE ~ NA_character_
+      )
+    )
 
   tidy_pivot <- tidy_pivot %>%
-    dplyr::group_by(.data$date, .data$age, .data$gcc_restofstate,
-                    .data$indicator) %>%
+    dplyr::group_by(
+      .data$date, .data$age, .data$gcc_restofstate,
+      .data$indicator
+    ) %>%
     dplyr::summarise(value = sum(.data$value)) %>%
     dplyr::ungroup()
 
@@ -103,14 +123,14 @@ get_lfs_lm1 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
   tidy_pivot <- tidy_pivot %>%
     dplyr::mutate(
       series_id = paste(.data$age,
-                        .data$gcc_restofstate,
-                        .data$indicator,
-                        sep = "_"
+        .data$gcc_restofstate,
+        .data$indicator,
+        sep = "_"
       ) %>% tolower(),
       series = paste(.data$indicator,
-                     .data$gcc_restofstate,
-                     .data$age,
-                     sep = " ; "
+        .data$gcc_restofstate,
+        .data$age,
+        sep = " ; "
       ),
       series_type = "Original",
       table_no = "LM1",
@@ -159,14 +179,14 @@ get_lfs_um2 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
   tidy_pivot <- tidy_pivot %>%
     dplyr::mutate(
       series_id = paste(.data$indicator,
-                        .data$state,
-                        .data$duration,
-                        sep = "_"
+        .data$state,
+        .data$duration,
+        sep = "_"
       ) %>% tolower(),
       series = paste(.data$indicator,
-                     .data$state,
-                     .data$duration,
-                     sep = " ; "
+        .data$state,
+        .data$duration,
+        sep = " ; "
       ),
       series_type = "Original",
       table_no = "UM2",
@@ -177,7 +197,6 @@ get_lfs_um2 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
     )
 
   tidy_pivot
-
 }
 
 
@@ -265,6 +284,10 @@ get_lfs_pivot <- function(cube,
                           path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
                           sheet = "Data 1",
                           col_names = TRUE) {
+  user_timeout <- getOption("timeout")
+  on.exit(options("timeout" = user_timeout))
+  options("timeout" = 180)
+
   file <- readabs::download_abs_data_cube(
     catalogue_string = catalogue_string,
     cube = cube,
@@ -293,8 +316,10 @@ tidy_lfs_pivot <- function(path,
     col_names = col_names,
     skip = 3
   ) %>%
-    dplyr::mutate(dplyr::across(where(~inherits(.x, "POSIXct")),
-                                as.Date))
+    dplyr::mutate(dplyr::across(
+      where(~ inherits(.x, "POSIXct")),
+      as.Date
+    ))
 
   df
 }

@@ -2,211 +2,206 @@ pkgload::load_all()
 library(dplyr)
 library(tidyr)
 
+options(timeout = 120)
+
+# Load LFS data -----
+
+# Switch to TRUE to load time series from `manual-time-series` subdirs
+load_manual <- FALSE
+
+if (isFALSE(load_manual)) {
+  abs_6202 <- dl_and_read("labour-force-australia")
+  abs_6291 <- dl_and_read("labour-force-australia-detailed")
+} else {
+  abs_6202 <- read_abs_local_dir(here::here("data-raw", "raw-data", "labour-force-australia", "manual-time-series"))
+  abs_6291 <- read_abs_local_dir(here::here("data-raw", "raw-data", "labour-force-australia-detailed", "manual-time-series"))
+}
+
 # Define IDs of interest -----
-lfs_ids <- c("A84423349V",
-             "A84423356T",
-             "A84423355R",
-             "A85223451R",
-             "A84423354L",
-             "A84423350C",
-             "A84423043C",
-             "A84423357V",
-             "A84423244X",
-             "A84423468K",
-             "A84423050A",
-             "A84423270C",
-             "A84423368A",
-             "A84423340X",
-             "A84423326C",
-             "A84423284T",
-             "A84423312R",
-             "A84423298F",
-             "A84423051C",
-             "A84423271F",
-             "A84423369C",
-             "A84423341A",
-             "A84423327F",
-             "A84423285V",
-             "A84423313T",
-             "A84423187R",
-             "A84426256L",
-             "A84426277X",
-             "A85223450L",
-             "A84423461V",
-             "A84423237A",
-             "A84423245A",
-             "A84423469L",
-             "A84423238C",
-             "A84423462W",
-             "A84423689R",
-             "A84423577W",
-             "A84423801C",
-             "A84423351F",
-             "A84423239F",
-             "A84423463X",
-             "A84423243W",
-             "A84423467J",
-             "A84423242V",
-             "A84423466F",
-             "A84424692W",
-             "A84424622R",
-             "A84591890J",
-             "A84424691V",
-             "A84424621L",
-             "A84433475V",
-             "A84433601W",
-             "A84600253V",
-             "A84600145K",
-             "A84599659L",
-             "A84600019W",
-             "A84600187J",
-             "A84599557X",
-             "A84600115W",
-             "A84599851L",
-             "A84599923L",
-             "A84600025T",
-             "A84600193C",
-             "A84600079X",
-             "A84599665J",
-             "A84600031L",
-             "A84599671C",
-             "A84599677T",
-             "A84599683L",
-             "A84599929A",
-             "A84600121T",
-             "A84600037A",
-             "A84600141A",
-             "A84600075R",
-             "A84595516F",
-             "A84595471L",
-             "A84600144J",
-             "A84599655C",
-             "A84599658K",
-             "A84600015L",
-             "A84600018V",
-             "A84600183X",
-             "A84600186F",
-             "A84599553R",
-             "A84599556W",
-             "A84600111L",
-             "A84600114V",
-             "A84599847W",
-             "A84599850K",
-             "A84599919W",
-             "A84599922K",
-             "A84600021J",
-             "A84600024R",
-             "A84600189L",
-             "A84600192A",
-             "A84600078W",
-             "A84599661X",
-             "A84599664F",
-             "A84600027W",
-             "A84600030K",
-             "A84599667L",
-             "A84599670A",
-             "A84599673J",
-             "A84599676R",
-             "A84599679W",
-             "A84599682K",
-             "A84599925T",
-             "A84599928X",
-             "A84600117A",
-             "A84600120R",
-             "A84600033T",
-             "A84600036X",
-             "A84601680F",
-             "A84601683L",
-             "A84601686V",
-             "A84601665J",
-             "A84601704L",
-             "A84601707V",
-             "A84601710J",
-             "A84601638A",
-             "A84601653X",
-             "A84601689A",
-             "A84601656F",
-             "A84601713R",
-             "A84601668R",
-             "A84601695W",
-             "A84601698C",
-             "A84601650T",
-             "A84601671C",
-             "A84601641R",
-             "A84601716W",
-             "A84601662A",
-             "A84601681J",
-             "A84601684R",
-             "A84601687W",
-             "A84601666K",
-             "A84601705R",
-             "A84601708W",
-             "A84601711K",
-             "A84601639C",
-             "A84601654A",
-             "A84601690K",
-             "A84601657J",
-             "A84601714T",
-             "A84601669T",
-             "A84601696X",
-             "A84601699F",
-             "A84601651V",
-             "A84601672F",
-             "A84601642T",
-             "A84601717X",
-             "A84601663C",
-             "A84601682K",
-             "A84601685T",
-             "A84601688X",
-             "A84601667L",
-             "A84601706T",
-             "A84601709X",
-             "A84601712L",
-             "A84601640L",
-             "A84601655C",
-             "A84601691L",
-             "A84601658K",
-             "A84601715V",
-             "A84601670A",
-             "A84601697A",
-             "A84601700C",
-             "A84601652W",
-             "A84601673J",
-             "A84601643V",
-             "A84601718A",
-             "A84601664F",
-             "A84423272J",
-             "A84423286W",
-             "A84423370L",
-             "A84423328J",
-             "A84423300F",
-             "A84423314V",
-             "A84423342C",
-             "A84423687K"
+lfs_ids <- c(
+  "A84423349V",
+  "A84423356T",
+  "A84423355R",
+  "A85223451R",
+  "A84423354L",
+  "A84423350C",
+  "A84423043C",
+  "A84423357V",
+  "A84423244X",
+  "A84423468K",
+  "A84423050A",
+  "A84423270C",
+  "A84423368A",
+  "A84423340X",
+  "A84423326C",
+  "A84423284T",
+  "A84423312R",
+  "A84423298F",
+  "A84423051C",
+  "A84423271F",
+  "A84423369C",
+  "A84423341A",
+  "A84423327F",
+  "A84423285V",
+  "A84423313T",
+  "A84423187R",
+  "A84426256L",
+  "A84426277X",
+  "A85223450L",
+  "A84423461V",
+  "A84423237A",
+  "A84423245A",
+  "A84423469L",
+  "A84423238C",
+  "A84423462W",
+  "A84423689R",
+  "A84423577W",
+  "A84423801C",
+  "A84423351F",
+  "A84423239F",
+  "A84423463X",
+  "A84423243W",
+  "A84423467J",
+  "A84423242V",
+  "A84423466F",
+  "A84424692W",
+  "A84424622R",
+  "A84591890J",
+  "A84424691V",
+  "A84424621L",
+  "A84433475V",
+  "A84433601W",
+  "A84600253V",
+  "A84600145K",
+  "A84599659L",
+  "A84600019W",
+  "A84600187J",
+  "A84599557X",
+  "A84600115W",
+  "A84599851L",
+  "A84599923L",
+  "A84600025T",
+  "A84600193C",
+  "A84600079X",
+  "A84599665J",
+  "A84600031L",
+  "A84599671C",
+  "A84599677T",
+  "A84599683L",
+  "A84599929A",
+  "A84600121T",
+  "A84600037A",
+  "A84600141A",
+  "A84600075R",
+  "A84595516F",
+  "A84595471L",
+  "A84600144J",
+  "A84599655C",
+  "A84599658K",
+  "A84600015L",
+  "A84600018V",
+  "A84600183X",
+  "A84600186F",
+  "A84599553R",
+  "A84599556W",
+  "A84600111L",
+  "A84600114V",
+  "A84599847W",
+  "A84599850K",
+  "A84599919W",
+  "A84599922K",
+  "A84600021J",
+  "A84600024R",
+  "A84600189L",
+  "A84600192A",
+  "A84600078W",
+  "A84599661X",
+  "A84599664F",
+  "A84600027W",
+  "A84600030K",
+  "A84599667L",
+  "A84599670A",
+  "A84599673J",
+  "A84599676R",
+  "A84599679W",
+  "A84599682K",
+  "A84599925T",
+  "A84599928X",
+  "A84600117A",
+  "A84600120R",
+  "A84600033T",
+  "A84600036X",
+  "A84601680F",
+  "A84601683L",
+  "A84601686V",
+  "A84601665J",
+  "A84601704L",
+  "A84601707V",
+  "A84601710J",
+  "A84601638A",
+  "A84601653X",
+  "A84601689A",
+  "A84601656F",
+  "A84601713R",
+  "A84601668R",
+  "A84601695W",
+  "A84601698C",
+  "A84601650T",
+  "A84601671C",
+  "A84601641R",
+  "A84601716W",
+  "A84601662A",
+  "A84601681J",
+  "A84601684R",
+  "A84601687W",
+  "A84601666K",
+  "A84601705R",
+  "A84601708W",
+  "A84601711K",
+  "A84601639C",
+  "A84601654A",
+  "A84601690K",
+  "A84601657J",
+  "A84601714T",
+  "A84601669T",
+  "A84601696X",
+  "A84601699F",
+  "A84601651V",
+  "A84601672F",
+  "A84601642T",
+  "A84601717X",
+  "A84601663C",
+  "A84601682K",
+  "A84601685T",
+  "A84601688X",
+  "A84601667L",
+  "A84601706T",
+  "A84601709X",
+  "A84601712L",
+  "A84601640L",
+  "A84601655C",
+  "A84601691L",
+  "A84601658K",
+  "A84601715V",
+  "A84601670A",
+  "A84601697A",
+  "A84601700C",
+  "A84601652W",
+  "A84601673J",
+  "A84601643V",
+  "A84601718A",
+  "A84601664F",
+  "A84423272J",
+  "A84423286W",
+  "A84423370L",
+  "A84423328J",
+  "A84423300F",
+  "A84423314V",
+  "A84423342C",
+  "A84423687K"
 )
 
 
-# Load ABS time series
-abs_6202 <- read_abs_if_updated(cat_no = "6202.0",
-                                include_orig_for_sadj = TRUE)
-
-# abs_6291 <- read_abs_if_updated(cat_no = "6291.0.55.001",
-#                                 include_orig_for_sadj = TRUE,
-#                                 series = lfs_ids,
-#                                 include_trend = FALSE)
-
-# abs_6291 <- readabs::read_abs("6291.0.55.001",
-#                      "all",
-#                      path = tempdir(),
-#                      check_local = FALSE)
-
-abs_6291 <- qs::qread("data-raw/abs-ts/6291-0-55-001.qs")
-
-abs_6291 <- abs_6291 %>%
-  dplyr::select(names(abs_6202))
-
-# abs_5368 <- read_abs_if_updated(cat_no = "5368.0")
-# abs_6345 <- read_abs_if_updated(cat_no = "6345.0")
 
 # Combine LFS data ----
 
@@ -218,9 +213,12 @@ abs_lfs <- abs_6291 %>%
     !series_id %in% abs_lfs$series_id) %>%
   bind_rows(abs_lfs)
 
+abs_lfs <- reduce_ts_df(abs_lfs,
+                        include_trend = FALSE,
+                        include_orig_for_sadj = TRUE)
+
 abs_lfs <- abs_lfs %>%
   group_by(series_id) %>%
-  mutate(across(where(is.factor), as.character)) %>%
   filter(
     # Where a series appears multiple times with different series descriptions,
     # keep the one with the longest description
@@ -236,19 +234,28 @@ abs_lfs <- abs_lfs %>%
 abs_lfs <- add_missing_data(abs_lfs)
 
 # Get pivot tables -------
-lfs_pivot <- get_all_lfs_pivots()
+lfs_pivot <- get_tidy_lfs_pivots()
+
 lfs_pivot <- lfs_pivot %>%
-  dplyr::select(date, value, series_id, series, series_type,
-                table_no, data_type, frequency, unit)
+  dplyr::select(
+    date, value, series_id, series, series_type,
+    table_no, data_type, frequency, unit
+  )
+
+save_df(
+  lfs_pivot,
+  here::here("data-raw", "abs-ts", "lfs-pivots.qs")
+)
 
 abs_lfs <- lfs_pivot %>%
   bind_rows(abs_lfs)
 
-compress_and_save_df(
+save_df(
   abs_lfs,
   here::here("data-raw", "abs-ts", "abs-lfs.qs")
 )
 
+# Update last_refreshed -----
 # Save file containing time that this script was last run
 last_refreshed <- lubridate::with_tz(Sys.time(), tzone = "Australia/Melbourne")
 file_conn <- file(here::here("data-raw", "last_refreshed.txt"))
@@ -256,13 +263,22 @@ writeLines(as.character(Sys.time()), file_conn)
 close(file_conn)
 
 # Lookup table for LFS series IDs -----
-# To re-create it from scratch, set `update_lfs_lookup` to `TRUE`
+# To re-create it from scratch, set `update_up` to `TRUE`
 update_lfs_lookup <- FALSE
 if (update_lfs_lookup) {
-  source(here::here(
-    "data-raw",
-    "create_lfs_lookup.R"
-  ))
+  lfs_lookup <- create_lfs_lookup(
+    abs_6202,
+    abs_6291,
+    lfs_pivot
+  )
+
+  saveRDS(
+    lfs_lookup,
+    here::here(
+      "data-raw",
+      "lfs_lookup.rds"
+    )
+  )
 }
 
 lfs_lookup <- readRDS(here::here(
@@ -281,4 +297,3 @@ usethis::use_data(lfs_lookup,
   internal = FALSE,
   overwrite = TRUE
 )
-

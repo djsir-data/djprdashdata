@@ -1,4 +1,7 @@
 #' Look up the series ID for time series from the ABS Labour Force Survey
+#'
+#' Based on internal data object created using create_lfs_lookup()
+#'
 #' @return A character vector of ABS Time Series ID(s) that match your query
 #' @param indicator the indicator of interest, such as "unemployment rate". See
 #' `Details` for possible indicators.
@@ -643,14 +646,13 @@ find_lfs_series <- function(indicator,
   )
 
   arg_list <- purrr::map(arg_list, tolower)
-  # arg_list <- purrr::map(arg_list, ~ match.arg(.x))
   arg_list <- purrr::set_names(
     arg_list,
     arg_vec
   )
 
   # Ignore case when testing for equality
-  is_equalish <- function(x, y) {
+  is_in <- function(x, y) {
     x <- tolower(x)
     y <- tolower(y)
     x %in% y
@@ -661,7 +663,7 @@ find_lfs_series <- function(indicator,
   lfs_lookup %>%
     dplyr::filter(dplyr::across(
       .cols = dplyr::all_of(arg_vec),
-      .fns = ~ is_equalish(.x, arg_list[[dplyr::cur_column()]])
+      .fns = ~ is_in(.x, arg_list[[dplyr::cur_column()]])
     )) %>%
     dplyr::pull(.data$series_id)
 }

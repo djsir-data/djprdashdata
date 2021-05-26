@@ -10,6 +10,12 @@ test_that("lfs_pivot functions work", {
   expect_gt(nrow(eq03), 75000)
   expect_length(eq03, 8)
 
-  gm1 <- get_lfs_pivot("GM1", "labour-force-australia", path = temppath)
-  expect_gt(nrow(gm1), 1e6)
+  lfs_pivots <- get_tidy_lfs_pivots()
+
+  expect_s3_class(lfs_pivots, "tbl_df")
+  expect_gt(nrow(lfs_pivots), 50000)
+
+  # Check that pivots are recent
+  time_diff <- Sys.Date() - max(lfs_pivots$date)
+  expect_lt(time_diff, 100)
 })
