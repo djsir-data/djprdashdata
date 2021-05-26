@@ -4,6 +4,7 @@ library(tidyr)
 
 options(timeout = 120)
 
+print(here::here())
 
 # Load LFS data -----
 
@@ -12,8 +13,8 @@ abs_6202_new <- dl_and_read("labour-force-australia")
 abs_6291_new <- dl_and_read("labour-force-australia-detailed")
 
 # Load local Excel files from manual-time-series subdirs
-abs_6202_man <- read_abs_local_dir(here::here("data-raw", "raw-data", "labour-force-australia", "manual-time-series"))
-abs_6291_man <- read_abs_local_dir(here::here("data-raw", "raw-data", "labour-force-australia-detailed", "manual-time-series"))
+abs_6202_man <- read_abs_local_dir(file.path("data-raw", "raw-data", "labour-force-australia", "manual-time-series"))
+abs_6291_man <- read_abs_local_dir(file.path("data-raw", "raw-data", "labour-force-australia-detailed", "manual-time-series"))
 
 # Check to see which is most recent / complete
 new_or_man <- function(new_df, man_df) {
