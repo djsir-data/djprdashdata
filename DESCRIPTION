@@ -17,7 +17,6 @@ Imports:
     dplyr (>= 1.0.5),
     here,
     purrr,
-    lubridate,
     qs,
     readabs (>= 0.4.8.902),
     rlang,

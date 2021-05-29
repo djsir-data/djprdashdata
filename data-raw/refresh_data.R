@@ -322,7 +322,7 @@ save_df(
 
 # Update last_refreshed -----
 # Save file containing time that this script was last run
-last_refreshed <- lubridate::with_tz(Sys.time(), tzone = "Australia/Melbourne")
+last_refreshed <- format(Sys.time(), tz = "Australia/Melbourne", usetz = TRUE)
 file_conn <- file(here::here("data-raw", "last_refreshed.txt"))
 writeLines(as.character(Sys.time()), file_conn)
 close(file_conn)
