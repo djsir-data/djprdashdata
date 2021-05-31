@@ -16,4 +16,4 @@ The `data-raw/refresh_data.R` file contains instructions to download and
 store various public data. The data itself is saved in `data-raw`. The
 `refresh_data.R` script is executed on a schedule using GitHub Actions.
 
-Data last updated at 2021-05-30 14:31:49 Melbourne time.
+Data last updated at 2021-05-31 11:14:03 Melbourne time.
