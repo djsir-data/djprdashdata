@@ -18,4 +18,4 @@ store various public data. The data itself is saved in `data-raw`.
 The `refresh_data.R` script is executed on a schedule using GitHub
 Actions.
 
-Data last updated at 2021-07-06 12:47:04 Melbourne time.
+Data last updated at 2021-07-07 10:31:49 Melbourne time.
