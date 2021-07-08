@@ -344,15 +344,6 @@ if (!all(test_results)) {
   stop("Some test results failed. New data not saved.")
 }
 
-# save_df(
-#   abs_6202,
-#   here::here("data-raw", "abs-ts", "6202-0.qs")
-# )
-#
-# save_df(
-#   abs_6291,
-#   here::here("data-raw", "abs-ts", "6291-0.qs")
-# )
 
 save_df(
   lfs_pivot,
