@@ -410,7 +410,7 @@ get_lfs_rm1 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
   # Collapse employment into total
   tidy_pivot <- tidy_pivot %>%
     dplyr::mutate(indicator = dplyr::if_else(
-      indicator %in% c("Employed full-time", "Employed part-time"),
+      .data$indicator %in% c("Employed full-time", "Employed part-time"),
       "Employed",
       .data$indicator
     ))
