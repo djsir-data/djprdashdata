@@ -5,15 +5,10 @@
 \title{Get all pivot tables for which functions have been created
 Need to manually add them}
 \usage{
-get_tidy_lfs_pivots(
-  path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
-  all_states = FALSE
-)
+get_tidy_lfs_pivots(path = Sys.getenv("R_READABS_PATH", unset = tempdir()))
 }
 \arguments{
-\item{path}{Path to directory in which to store downloaded file(s)}
-
-\item{all_states}{logical, \code{FALSE} by default. When \code{FALSE}, states other than
+\item{path}{Path to directory in which to store downloaded file(s)
 Victoria will be removed.}
 }
 \description{

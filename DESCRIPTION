@@ -22,7 +22,8 @@ Imports:
     rlang,
     tidyr,
     readxl,
-    zip
+    zip,
+    tibble
 Remotes: 
     mattcowgill/readabs
 Depends: 

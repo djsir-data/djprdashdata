@@ -2,7 +2,6 @@
 #' Get all pivot tables for which functions have been created
 #' Need to manually add them
 #' @param path Path to directory in which to store downloaded file(s)
-#' @param all_states logical, `FALSE` by default. When `FALSE`, states other than
 #' Victoria will be removed.
 #'
 #'

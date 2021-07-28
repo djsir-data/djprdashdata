@@ -2,47 +2,9 @@ pkgload::load_all()
 library(dplyr)
 library(tidyr)
 
-options(timeout = 120)
+options(timeout = 180)
 
 # Load LFS data -----
-
-# Load files from ABS website using ZIP files
-abs_6202_new <- dl_and_read("labour-force-australia")
-abs_6291_new <- dl_and_read("labour-force-australia-detailed")
-
-# When running interactively, check local Excel downloads to see if they're more
-# recent/complete than those obtained from the ZIPs
-check_manual <- FALSE
-if (interactive() && check_manual) {
-
-  # Load local Excel files from manual-time-series subdirs
-  abs_6202_man <- read_abs_local_dir(file.path("data-raw", "raw-data", "labour-force-australia", "manual-time-series"))
-  abs_6291_man <- read_abs_local_dir(file.path("data-raw", "raw-data", "labour-force-australia-detailed", "manual-time-series"))
-
-  # Check to see which is most recent / complete
-  new_or_man <- function(new_df, man_df) {
-    if (max(new_df$date) >= max(man_df$date)) {
-      df <- new_df
-    } else {
-      df <- old_df
-    }
-    df
-  }
-
-  abs_6202 <- new_or_man(abs_6202_new, abs_6291_man)
-  abs_6291 <- new_or_man(abs_6291_new, abs_6291_man)
-
-  rm(
-    abs_6202_man,
-    abs_6291_man
-  )
-} else {
-  abs_6202 <- abs_6202_new
-  abs_6291 <- abs_6291_new
-}
-
-rm(abs_6202_new, abs_6291_new)
-
 # Define IDs of interest -----
 lfs_ids <- c("A84423349V",
              "A84423356T",
@@ -340,8 +302,49 @@ lfs_ids <- c("A84423349V",
              "A84424688F",
              "A84424689J",
              "A84424694A",
-             "A84424597X")
+             "A84424597X",
+             "A84600252T",
+             "A84600254W")
 
+stopifnot(length(lfs_ids) > 290)
+stopifnot(inherits(lfs_ids, "character"))
+
+# Load files from ABS website using ZIP files
+abs_6202_new <- dl_and_read("labour-force-australia")
+abs_6291_new <- dl_and_read("labour-force-australia-detailed")
+
+# When running interactively, check local Excel downloads to see if they're more
+# recent/complete than those obtained from the ZIPs
+check_manual <- FALSE
+if (interactive() && check_manual) {
+
+  # Load local Excel files from manual-time-series subdirs
+  abs_6202_man <- read_abs_local_dir(file.path("data-raw", "raw-data", "labour-force-australia", "manual-time-series"))
+  abs_6291_man <- read_abs_local_dir(file.path("data-raw", "raw-data", "labour-force-australia-detailed", "manual-time-series"))
+
+  # Check to see which is most recent / complete
+  new_or_man <- function(new_df, man_df) {
+    if (max(new_df$date) >= max(man_df$date)) {
+      df <- new_df
+    } else {
+      df <- old_df
+    }
+    df
+  }
+
+  abs_6202 <- new_or_man(abs_6202_new, abs_6291_man)
+  abs_6291 <- new_or_man(abs_6291_new, abs_6291_man)
+
+  rm(
+    abs_6202_man,
+    abs_6291_man
+  )
+} else {
+  abs_6202 <- abs_6202_new
+  abs_6291 <- abs_6291_new
+}
+
+rm(abs_6202_new, abs_6291_new)
 
 # Combine LFS data ----
 
