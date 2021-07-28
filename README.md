@@ -30,15 +30,16 @@ This public data is used in the DJPR Jobs Dashboard. See:
 The `refresh_data.R` script is executed on a schedule using GitHub
 Actions.
 
-The data was last updated at 2021-07-28 10:42:56 Melbourne time.
+The data was last updated at 2021-07-28 11:15:26 Melbourne time.
 
 ## Modifying the data stored in this repository
 
 The file `abs-lfs.qs` in the `data-raw/abs-ts` sub-folder of this
-repository is the data loaded by the DJPR Jobs Dashboard. This is a
-subset of the publicly-available ABS labour force survey data. The file
-is loaded by the dashboard using the `djprlabourdash::load_dash_data()`
-command.
+repository is the data loaded by the DJPR Jobs Dashboard.
+
+This is a subset of the publicly-available ABS labour force survey data.
+The file is loaded by the dashboard using the
+`djprlabourdash::load_dash_data()` command.
 
 The `refresh_data.R` script defines which series from the labour force
 survey are included in `abs-lfs.qs` and therefore available to the DJPR
