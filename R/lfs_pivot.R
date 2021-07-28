@@ -389,21 +389,22 @@ get_lfs_rm1 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
     701L,               "Greater Darwin",
     702L,                   "Rest of NT",
     801L, "Australian Capital Territory"
-    )
+  )
 
   tidy_pivot <- tidy_pivot %>%
-    dplyr::mutate(sa4 = as.integer(substr(sa4, 1, 3) )) %>%
+    dplyr::mutate(sa4 = as.integer(substr(.data$sa4, 1, 3))) %>%
     dplyr::left_join(sa4_to_gcc, by = "sa4")
 
   # Collapse age groups into three broad groups
   tidy_pivot <- tidy_pivot %>%
-    dplyr::mutate(age =
-    dplyr::case_when(
-      age == "15-24 years" ~ "15-24",
-      age %in% c("25-34 years", "35-44 years", "45-54 years") ~ "25-54",
-      age %in% c("55-64 years", "65 years and over") ~ "55+",
-      TRUE ~ NA_character_
-    )
+    dplyr::mutate(
+      age =
+        dplyr::case_when(
+          .data$age == "15-24 years" ~ "15-24",
+          .data$age %in% c("25-34 years", "35-44 years", "45-54 years") ~ "25-54",
+          .data$age %in% c("55-64 years", "65 years and over") ~ "55+",
+          TRUE ~ NA_character_
+        )
     )
 
   # Collapse employment into total
@@ -411,27 +412,32 @@ get_lfs_rm1 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
     dplyr::mutate(indicator = dplyr::if_else(
       indicator %in% c("Employed full-time", "Employed part-time"),
       "Employed",
-      indicator
+      .data$indicator
     ))
 
   # We are not interested in sex differences
   tidy_pivot <- tidy_pivot %>%
-    dplyr::group_by(date, age, indicator, gcc_restofstate) %>%
-    dplyr::summarise(value = sum(value)) %>%
+    dplyr::group_by(
+      .data$date,
+      .data$age,
+      .data$indicator,
+      .data$gcc_restofstate
+    ) %>%
+    dplyr::summarise(value = sum(.data$value)) %>%
     dplyr::ungroup()
 
   # Create series IDs
   tidy_pivot <- tidy_pivot %>%
     dplyr::mutate(
       series_id = paste(.data$age,
-                        .data$indicator,
-                        .data$gcc_restofstate,
-                        sep = "_"
+        .data$indicator,
+        .data$gcc_restofstate,
+        sep = "_"
       ) %>% tolower(),
       series = paste(.data$age,
-                     .data$indicator,
-                     .data$gcc_restofstate,
-                     sep = " ; "
+        .data$indicator,
+        .data$gcc_restofstate,
+        sep = " ; "
       ),
       series_type = "Original",
       table_no = "RM1",
@@ -443,7 +449,7 @@ get_lfs_rm1 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
 
   if (isFALSE(all_states)) {
     tidy_pivot <- tidy_pivot %>%
-      dplyr::filter(grepl("Melbourne|Vic", gcc_restofstate))
+      dplyr::filter(grepl("Melbourne|Vic", .data$gcc_restofstate))
   }
 
   tidy_pivot
