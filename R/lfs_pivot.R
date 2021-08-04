@@ -127,6 +127,23 @@ get_lfs_lm1 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
     dplyr::summarise(value = sum(.data$value)) %>%
     dplyr::ungroup()
 
+  # Calculate unemployment rate
+  age_sex <- age_sex %>%
+    dplyr::group_by(.data$date,
+                    .data$age,
+                    .data$sex) %>%
+    dplyr::summarise(`Unemployment rate` = sum(.data$value[.data$indicator == "Unemployed"] /
+                                                 (
+                                                   .data$value[.data$indicator == "Unemployed"] +
+                                                     .data$value[.data$indicator == "Employed"]
+                                                 )
+    )
+    ) %>%
+    tidyr::pivot_longer(cols = .data$`Unemployment rate`,
+                        names_to = "indicator",
+                        values_to = "value") %>%
+    dplyr::ungroup() %>%
+    dplyr::bind_rows(age_sex)
 
   # Create series IDs
   age_gcc <- age_gcc %>%
