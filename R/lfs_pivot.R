@@ -146,6 +146,7 @@ get_lfs_lm1 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
       values_to = "value"
     ) %>%
     dplyr::ungroup() %>%
+    dplyr::mutate(unit = "Percent") %>%
     dplyr::bind_rows(age_sex)
 
   # Create series IDs
@@ -189,7 +190,7 @@ get_lfs_lm1 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
       table_no = "LM1",
       data_type = "STOCK",
       frequency = "Month",
-      unit = "000",
+      unit = dplyr::if_else(is.na(.data$unit), "000", .data$unit),
       cat_no = "6291.0.55.001"
     )
 
