@@ -35,7 +35,8 @@ get_tidy_lfs_pivots <- function(path = Sys.getenv("R_READABS_PATH", unset = temp
 get_lfs_lm1 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
                         all_states = FALSE) {
   raw_pivot <- get_lfs_pivot("LM1",
-                             path = path)
+    path = path
+  )
 
   names(raw_pivot) <- c(
     "date",
@@ -129,19 +130,21 @@ get_lfs_lm1 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
 
   # Calculate unemployment rate
   age_sex <- age_sex %>%
-    dplyr::group_by(.data$date,
-                    .data$age,
-                    .data$sex) %>%
-    dplyr::summarise(`Unemployment rate` = sum(.data$value[.data$indicator == "Unemployed"] /
-                                                 (
-                                                   .data$value[.data$indicator == "Unemployed"] +
-                                                     .data$value[.data$indicator == "Employed"]
-                                                 )
-    )
+    dplyr::group_by(
+      .data$date,
+      .data$age,
+      .data$sex
     ) %>%
-    tidyr::pivot_longer(cols = .data$`Unemployment rate`,
-                        names_to = "indicator",
-                        values_to = "value") %>%
+    dplyr::summarise(`Unemployment rate` = 100 * sum(.data$value[.data$indicator == "Unemployed"] /
+      (
+        .data$value[.data$indicator == "Unemployed"] +
+          .data$value[.data$indicator == "Employed"]
+      ))) %>%
+    tidyr::pivot_longer(
+      cols = .data$`Unemployment rate`,
+      names_to = "indicator",
+      values_to = "value"
+    ) %>%
     dplyr::ungroup() %>%
     dplyr::bind_rows(age_sex)
 
@@ -157,24 +160,28 @@ get_lfs_lm1 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
         .data$gcc_restofstate,
         .data$age,
         sep = " ; "
-      ))
+      )
+    )
 
   age_sex <- age_sex %>%
     dplyr::mutate(
       series_id = paste(.data$age,
-                        .data$sex,
-                        .data$indicator,
-                        sep = "_"
+        .data$sex,
+        .data$indicator,
+        sep = "_"
       ) %>% tolower(),
       series = paste(.data$indicator,
-                     .data$sex,
-                     .data$age,
-                     sep = " ; "
-      ))
+        .data$sex,
+        .data$age,
+        sep = " ; "
+      )
+    )
 
   tidy_pivot <- dplyr::bind_rows(age_gcc, age_sex) %>%
-    dplyr::mutate(dplyr::across(c("sex", "gcc_restofstate"),
-                                ~dplyr::if_else(is.na(.x), "", .x)))
+    dplyr::mutate(dplyr::across(
+      c("sex", "gcc_restofstate"),
+      ~ dplyr::if_else(is.na(.x), "", .x)
+    ))
 
   tidy_pivot <- tidy_pivot %>%
     dplyr::mutate(
