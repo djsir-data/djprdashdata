@@ -20,17 +20,17 @@ using the package’s functions. The data itself is saved in `data-raw`.
 
 This public data is used in the DJPR Jobs Dashboard. See:
 
--   The [`djprlabourdash`](https://github.com/djpr-data/djprlabourdash)
+  - The [`djprlabourdash`](https://github.com/djpr-data/djprlabourdash)
     GitHub repo for the Jobs Dashboard code; and
 
--   The [live dashboard](https://djpr-spp.shinyapps.io/djprlabourdash/).
+  - The [live dashboard](https://djpr-spp.shinyapps.io/djprlabourdash/).
 
 ## Last refresh date
 
 The `refresh_data.R` script is executed on a schedule using GitHub
 Actions.
 
-The data was last updated at 2021-08-04 10:36:08 Melbourne time.
+The data was last updated at 2021-08-04 10:51:43 Melbourne time.
 
 ## Modifying the data stored in this repository
 
@@ -46,10 +46,10 @@ survey are included in `abs-lfs.qs` and therefore available to the DJPR
 Jobs Dashboard. To add time series to this file, follow these steps:
 
 1.  Ensure you have the `djprdashdata` repository on your local machine.
-    You only need to do this step once. In RStudio, click `File` -&gt;
-    `New Project` -&gt; `Version Control` -&gt; `Git`. Then paste the
-    GitHub repository URL for `djprdashdata` and choose a location for
-    the project on your disk;
+    You only need to do this step once. In RStudio, click `File` -\>
+    `New Project` -\> `Version Control` -\> `Git`. Then paste the GitHub
+    repository URL for `djprdashdata` and choose a location for the
+    project on your disk;
 
 2.  Create a new branch on GitHub in the `djprdashdata` from the `main`
     branch;
@@ -74,7 +74,7 @@ Jobs Dashboard. To add time series to this file, follow these steps:
 9.  R will now run the `refresh_data.R` script. If it does not encounter
     any errors, the data in the project will update. You should see
     console output that ends with something like this;
-
+    
     ![](images/Screen%20Shot%202021-07-28%20at%2010.55.44%20am.png)
 
 10. In the `Git` pane of RStudio, stage and commit all modified files,
