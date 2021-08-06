@@ -5,6 +5,10 @@ library(tidyr)
 options(timeout = 180)
 
 # Calculate number of rows on existing data
+print(wd)
+print(here::here())
+file.exists(here::here("data-raw", "abs-ts", "abs-lfs.qs"))
+
 old_rows <- load_data(here::here("data-raw", "abs-ts", "abs-lfs.qs")) %>%
   tidyr::unnest(cols = .data$data) %>%
   nrow()
