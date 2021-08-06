@@ -24,7 +24,7 @@ jobs:
       - name: Install packages
         run: Rscript -e 'install.packages(c("remotes", "pkgload", "rmarkdown", "usethis"), type = "binary")'
       - name: Install dependencies
-        run: Rscript -e 'remotes::install_deps(type = "binary", force = FALSE, dependencies = TRUE")'
+        run: Rscript -e 'remotes::install_deps(type = "binary", force = FALSE, dependencies = TRUE)'
       - name: Get data
         run: Rscript -e 'source(here::here("data-raw", "refresh_data.R"), echo = TRUE)'
       - name: Render README
