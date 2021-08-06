@@ -5,6 +5,8 @@ library(tidyr)
 options(timeout = 180)
 
 # Calculate number of rows on existing data
+old_last_updated <- readRDS(here::here("data-raw", "last_updated.rds"))
+old_last_updated
 lfs_path <- here::here("data-raw", "abs-ts", "abs-lfs.qs")
 file.exists(lfs_path)
 
