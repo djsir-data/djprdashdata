@@ -5,7 +5,11 @@ library(tidyr)
 options(timeout = 180)
 
 # Calculate number of rows on existing data
-old_rows <- qs::qread(here::here("data-raw", "abs-ts", "abs-lfs.qs")) %>%
+lfs_path <- here::here("data-raw", "abs-ts", "abs-lfs.qs")
+file.exists(lfs_path)
+
+old_lfs <- qs::qread(lfs_path, T)
+old_rows <- old_lfs %>%
   unnest(cols = .data$data) %>%
   nrow()
 
