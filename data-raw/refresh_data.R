@@ -4,6 +4,11 @@ library(tidyr)
 
 options(timeout = 180)
 
+# Calculate number of rows on existing data
+old_rows <- load_data(here::here("data-raw", "abs-ts", "abs-lfs.qs")) %>%
+  tidyr::unnest(cols = .data$data) %>%
+  nrow()
+
 # Load LFS data -----
 # Define IDs of interest -----
 lfs_ids <- c(
@@ -397,32 +402,37 @@ lfs_pivot <- lfs_pivot %>%
 abs_lfs <- lfs_pivot %>%
   bind_rows(abs_lfs)
 
+new_rows <- nrow(abs_lfs)
+data_updated <- old_rows != new_rows
+
 # Perform checks and save ----
 
-test_results <- c(
-  all(lfs_ids %in% abs_lfs$series_id),
-  max(abs_lfs$date) - max(lfs_pivot$date) < 60,
-  Sys.Date() - max(abs_lfs$date) < 100,
-  nrow(lfs_pivot) > 51000,
-  nrow(abs_lfs) > 107000,
-  length(lfs_pivot) == 9,
-  length(abs_lfs) == 9
-)
+if (data_updated) {
+  test_results <- c(
+    all(lfs_ids %in% abs_lfs$series_id),
+    max(abs_lfs$date) - max(lfs_pivot$date) < 60,
+    Sys.Date() - max(abs_lfs$date) < 100,
+    nrow(lfs_pivot) > 51000,
+    nrow(abs_lfs) > 107000,
+    length(lfs_pivot) == 9,
+    length(abs_lfs) == 9
+  )
 
-if (!all(test_results)) {
-  stop("Some test results failed. New data not saved.")
+  if (!all(test_results)) {
+    stop("Some test results failed. New data not saved.")
+  }
+
+
+  save_df(
+    lfs_pivot,
+    here::here("data-raw", "abs-ts", "lfs-pivots.qs")
+  )
+
+  save_df(
+    abs_lfs,
+    here::here("data-raw", "abs-ts", "abs-lfs.qs")
+  )
 }
-
-
-save_df(
-  lfs_pivot,
-  here::here("data-raw", "abs-ts", "lfs-pivots.qs")
-)
-
-save_df(
-  abs_lfs,
-  here::here("data-raw", "abs-ts", "abs-lfs.qs")
-)
 
 # Update last_refreshed -----
 # Save file containing time that this script was last run
@@ -430,6 +440,14 @@ last_refreshed <- format(Sys.time(), tz = "Australia/Melbourne", usetz = TRUE)
 file_conn <- file(here::here("data-raw", "last_refreshed.txt"))
 writeLines(as.character(Sys.time()), file_conn)
 close(file_conn)
+
+if (data_updated) {
+  last_updated <- last_refreshed
+  file_conn <- file(here::here("data-raw", "last_updated.txt"))
+  writeLines(as.character(Sys.time()), file_conn)
+  close(file_conn)
+  saveRDS(last_updated, file = here::here("data-raw", "last_updated.rds"))
+}
 
 # Lookup table for LFS series IDs -----
 # To re-create it from scratch, set `update_up` to `TRUE`
@@ -456,6 +474,7 @@ lfs_lookup <- readRDS(here::here(
 
 # Save data ----
 usethis::use_data(last_refreshed,
+                  last_updated,
   lfs_lookup,
   internal = TRUE,
   overwrite = TRUE

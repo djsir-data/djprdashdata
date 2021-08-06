@@ -40,9 +40,15 @@ The `refresh_data.R` script is executed on a schedule using GitHub Actions.
 ref_date <- readLines(here::here("data-raw", "last_refreshed.txt"))
 ref_date <- as.POSIXct(ref_date)
 ref_date <- format(ref_date, tz = "Australia/Melbourne")
+
+update_date <- readLines(here::here("data-raw", "last_updated.txt"))
+update_date <- as.POSIXct(update_date)
+update_date <- format(update_date, tz = "Australia/Melbourne")
 ```
 
-The data was last updated at `r ref_date` Melbourne time.
+The last time the script was run to check for new data was `r ref_date` Melbourne time. 
+
+The last time new data was found was `r update_date` Melbourne time.
 
 ## Modifying the data stored in this repository
 
