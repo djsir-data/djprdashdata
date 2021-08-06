@@ -5,7 +5,7 @@ library(tidyr)
 options(timeout = 180)
 
 # Calculate number of rows on existing data
-print(wd)
+print(getwd())
 print(here::here())
 file.exists(here::here("data-raw", "abs-ts", "abs-lfs.qs"))
 
