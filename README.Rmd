@@ -33,7 +33,6 @@ This public data is used in the DJPR Jobs Dashboard. See:
 -   The [live dashboard](https://djpr-spp.shinyapps.io/djprlabourdash/).
 
 ## Last refresh date
-
 The `refresh_data.R` script is executed on a schedule using GitHub Actions.
 
 ```{r, include=FALSE}
