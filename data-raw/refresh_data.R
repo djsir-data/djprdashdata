@@ -4,17 +4,6 @@ library(tidyr)
 
 options(timeout = 180)
 
-# Calculate number of rows on existing data
-old_last_updated <- readRDS(here::here("data-raw", "last_updated.rds"))
-old_last_updated
-lfs_path <- here::here("data-raw", "abs-ts", "abs-lfs.qs")
-file.exists(lfs_path)
-
-old_lfs <- qs::qread(lfs_path, T)
-old_rows <- old_lfs %>%
-  unnest(cols = .data$data) %>%
-  nrow()
-
 # Load LFS data -----
 # Define IDs of interest -----
 lfs_ids <- c(
@@ -479,9 +468,12 @@ lfs_lookup <- readRDS(here::here(
 ))
 
 # Save data ----
+old_rows <- nrow(abs_lfs)
 usethis::use_data(last_refreshed,
                   last_updated,
   lfs_lookup,
+  abs_lfs,
+  old_rows,
   internal = TRUE,
   overwrite = TRUE
 )
