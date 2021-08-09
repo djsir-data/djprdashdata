@@ -512,11 +512,11 @@ get_lfs_rm1 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
     ) %>%
     dplyr::summarise(value = sum(.data$value)) %>%
     dplyr::ungroup() %>%
-    dplyr::mutate(sa4 = as.character(sa4)) %>%
+    dplyr::mutate(sa4 = as.character(.data$sa4)) %>%
     dplyr::left_join(sa4_lookup,
                      by = c("sa4" = "sa4_code")) %>%
     # dplyr::select(date, age, indicator, sa4 = sa4_name, value) %>%
-    dplyr::filter(age == "15-24")
+    dplyr::filter(.data$age == "15-24")
 
   sa4 <- sa4 %>%
     dplyr::mutate(
