@@ -24,6 +24,7 @@ knitr::opts_chunk$set(
 ## Overview
 
 This R package contains functions to download, tidy, and store data from the ABS and other public data sources.
+
 The `data-raw/refresh_data.R` file contains code to download public data using the package's functions. The data itself is saved in `data-raw`.
 
 This public data is used in the DJPR Jobs Dashboard. See:
