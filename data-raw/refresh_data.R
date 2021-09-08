@@ -311,8 +311,10 @@ lfs_ids <- c("A84423349V",
              "A84433594K",
              "A84433597T",
              "A84433476W",
-             "A84424602F")
-
+             "A84424602F",
+             "A85223482F",
+             "A85223418L",
+             "A84424601C")
 
 stopifnot(length(lfs_ids) > 290)
 stopifnot(inherits(lfs_ids, "character"))
