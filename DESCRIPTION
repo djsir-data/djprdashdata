@@ -1,6 +1,6 @@
 Package: djprdashdata
 Title: What the Package Does (One Line, Title Case)
-Version: 0.0.2.9005
+Version: 0.0.2.9004
 Authors@R: 
     person(given = "Matt",
            family = "Cowgill",
@@ -12,7 +12,7 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Imports: 
     dplyr (>= 1.0.5),
     here,
