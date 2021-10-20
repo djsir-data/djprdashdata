@@ -23,7 +23,8 @@ Imports:
     tidyr,
     readxl,
     zip,
-    tibble
+    tibble,
+    rvest
 Remotes: 
     mattcowgill/readabs
 Depends: 
