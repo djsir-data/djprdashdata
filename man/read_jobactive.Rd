@@ -4,10 +4,10 @@
 \alias{read_jobactive}
 \title{Download and tidy jobactive caseload data from the LMIP}
 \usage{
-read_jobactive(path = tempfile(fileext = ".xlsx"))
+read_jobactive(file = tempfile(fileext = ".xlsx"))
 }
 \arguments{
-\item{path}{Path, including filename and extension, to the location where
+\item{file}{Path, including filename and extension, to the location where
 the jobactive Excel file should be downloaded.}
 }
 \value{

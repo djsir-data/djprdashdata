@@ -1,6 +1,6 @@
 Package: djprdashdata
 Title: What the Package Does (One Line, Title Case)
-Version: 0.0.2.9004
+Version: 0.0.2.9005
 Authors@R: 
     person(given = "Matt",
            family = "Cowgill",
@@ -24,7 +24,9 @@ Imports:
     readxl,
     zip,
     tibble,
-    rvest
+    rvest,
+    stringr,
+    janitor
 Remotes: 
     mattcowgill/readabs
 Depends: 

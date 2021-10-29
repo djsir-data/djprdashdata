@@ -4,7 +4,7 @@
 #' Labour Market Information Portal. This function downloads and tidies that
 #' data.
 #'
-#' @param path Path, including filename and extension, to the location where
+#' @param file Path, including filename and extension, to the location where
 #' the jobactive Excel file should be downloaded.
 #' @return A `tbl_df`
 #' @examples
@@ -14,7 +14,7 @@
 #' @export
 #' @importFrom dplyr .data
 
-read_jobactive <- function(path = tempfile(fileext =".xlsx")) {
+read_jobactive <- function(file = tempfile(fileext = ".xlsx")) {
 
   # Scrape Jobactive site
   url <- "https://lmip.gov.au/default.aspx?LMIP/Downloads/EmploymentRegion"
@@ -32,25 +32,29 @@ read_jobactive <- function(path = tempfile(fileext =".xlsx")) {
 
   # Find which link on the page contains "jobactive caseload data"
   matching_link <- links[grepl("jobactive Caseload Data",
-                               link_text,
-                               ignore.case = TRUE)]
+    link_text,
+    ignore.case = TRUE
+  )]
 
   matching_link <- paste0("https://lmip.gov.au/", matching_link)
 
   # Download the jobactive caseload data Excel file
-  excel_location <- path
 
-  download.file(url = matching_link,
-                destfile = excel_location,
-                quiet = TRUE,
-                mode = "wb")
+  utils::download.file(
+    url = matching_link,
+    destfile = file,
+    quiet = TRUE,
+    mode = "wb"
+  )
 
   # Load the Excel file
   raw_data <- suppressMessages(
-    readxl::read_excel(excel_location,
-                                 col_names = FALSE,
-                                 skip = 1,
-                                 .name_repair = "unique"))
+    readxl::read_excel(file,
+      col_names = FALSE,
+      skip = 1,
+      .name_repair = "unique"
+    )
+  )
 
   # Remove the final row, as it contains notes
   raw_data <- raw_data %>%
@@ -59,15 +63,19 @@ read_jobactive <- function(path = tempfile(fileext =".xlsx")) {
   # The first row contains dates - extract this and pivot to long format
   dates <- raw_data %>%
     dplyr::filter(dplyr::row_number() == 1) %>%
-    tidyr::pivot_longer(names_to = "col",
-                        values_to = "date",
-                        cols = dplyr::everything())
+    tidyr::pivot_longer(
+      names_to = "col",
+      values_to = "date",
+      cols = dplyr::everything()
+    )
 
   df <- raw_data %>%
     dplyr::filter(dplyr::row_number() != 1) %>%
-    tidyr::pivot_longer(names_to = "col",
-                        values_to = "value",
-                        cols = !1)
+    tidyr::pivot_longer(
+      names_to = "col",
+      values_to = "value",
+      cols = !1
+    )
 
   df <- df %>%
     dplyr::left_join(dates, by = "col") %>%
@@ -75,19 +83,53 @@ read_jobactive <- function(path = tempfile(fileext =".xlsx")) {
     tidyr::fill(.data$date)
 
   df <- df %>%
-    tidyr::pivot_wider(names_from = 1,
-                       values_from = .data$value) %>%
+    tidyr::pivot_wider(
+      names_from = 1,
+      values_from = .data$value
+    ) %>%
     dplyr::select(-.data$col) %>%
     dplyr::rename(indicator = .data$`Employment Region Name`)
 
   df <- df %>%
-    tidyr::pivot_longer(names_to = "region",
-                        values_to = "value",
-                        cols = !one_of(c("date", "indicator")))
+    tidyr::pivot_longer(
+      names_to = "region",
+      values_to = "value",
+      cols = !dplyr::one_of(c("date", "indicator"))
+    )
 
   df <- df %>%
-    dplyr::mutate(value = suppressWarnings(as.numeric(.data$value)))
+    dplyr::mutate(value = suppressWarnings(as.numeric(.data$value)) / 1000)
+
+  df <- df %>%
+    dplyr::mutate(
+      indicator = gsub("Caseload", "", .data$indicator, ignore.case = TRUE),
+      indicator = gsub("jobactive", "", .data$indicator, ignore.case = TRUE)
+    )
+
+  df <- df %>%
+    dplyr::mutate(
+      indicator = gsub("(15+)", "", .data$indicator, fixed = TRUE),
+      indicator = gsub("under 25", "15-24", .data$indicator, fixed = TRUE),
+      indicator = stringr::str_squish(.data$indicator)
+    )
+
+  df <- df %>%
+    dplyr::mutate(
+      series = paste("Jobactive caseload", .data$indicator, .data$region, sep = " ; "),
+      series_id = tolower(paste("jobactive", .data$indicator, .data$region, sep = "_")),
+      series_type = "Original",
+      data_type = "STOCK",
+      table_no = "jobactive",
+      frequency = "Quarter",
+      unit = "000"
+    ) %>%
+    dplyr::select(-.data$indicator, -.data$region)
 
   df
+}
+
+#'
+
+create_jobactive_lookup <- function(jobactive) {
 
 }

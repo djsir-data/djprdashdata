@@ -349,10 +349,12 @@ get_lfs_rm1 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
   sa4_lookup <- raw_pivot %>%
     dplyr::group_by(.data$sa4) %>%
     dplyr::summarise() %>%
-    tidyr::separate(col = .data$sa4,
-                    into = c("sa4_code", "sa4_name"),
-                    sep = " ",
-                    extra = "merge")
+    tidyr::separate(
+      col = .data$sa4,
+      into = c("sa4_code", "sa4_name"),
+      sep = " ",
+      extra = "merge"
+    )
 
   # Assign each sa4 to either greater capital city / rest of state
   # Uses lookup table from absmapsdata
@@ -514,7 +516,8 @@ get_lfs_rm1 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
     dplyr::ungroup() %>%
     dplyr::mutate(sa4 = as.character(.data$sa4)) %>%
     dplyr::left_join(sa4_lookup,
-                     by = c("sa4" = "sa4_code")) %>%
+      by = c("sa4" = "sa4_code")
+    ) %>%
     # dplyr::select(date, age, indicator, sa4 = sa4_name, value) %>%
     dplyr::filter(.data$age == "15-24")
 
@@ -527,16 +530,19 @@ get_lfs_rm1 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
         sep = "_"
       ) %>% tolower(),
       series = paste(.data$age,
-                     .data$indicator,
-                     .data$sa4_name,
-                     sep = " ; ")
+        .data$indicator,
+        .data$sa4_name,
+        sep = " ; "
+      )
     )
 
   tidy_pivot <- dplyr::bind_rows(sa4, gcc)
 
   tidy_pivot <- tidy_pivot %>%
-    dplyr::mutate(dplyr::across(c(.data$sa4, .data$gcc_restofstate),
-                                ~dplyr::if_else(is.na(.x), "", .x)))
+    dplyr::mutate(dplyr::across(
+      c(.data$sa4, .data$gcc_restofstate),
+      ~ dplyr::if_else(is.na(.x), "", .x)
+    ))
 
   tidy_pivot <- tidy_pivot %>%
     dplyr::mutate(
@@ -551,12 +557,12 @@ get_lfs_rm1 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
   if (isFALSE(all_states)) {
     tidy_pivot <- tidy_pivot %>%
       dplyr::filter(grepl("Melbourne|Vic", .data$gcc_restofstate) |
-                      .data$gcc_restofstate == "")
+        .data$gcc_restofstate == "")
   }
 
   tidy_pivot <- tidy_pivot %>%
     dplyr::filter(substr(.data$sa4, 1, 1) == "2" |
-                    .data$sa4 == "")
+      .data$sa4 == "")
 
   tidy_pivot <- tidy_pivot %>%
     dplyr::select(-.data$sa4) %>%
