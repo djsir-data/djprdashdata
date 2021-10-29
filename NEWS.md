@@ -1,5 +1,5 @@
 # djprdashdata 0.0.2.9000
-
+* Add read_jobactive() to download jobactive data
 * Change method of data ingest, no longer relying on ABS TSD
 
 # djprdashdata 0.0.1.9000

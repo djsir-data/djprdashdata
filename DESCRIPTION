@@ -12,7 +12,7 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Imports: 
     dplyr (>= 1.0.5),
     here,
@@ -23,7 +23,10 @@ Imports:
     tidyr,
     readxl,
     zip,
-    tibble
+    tibble,
+    rvest,
+    stringr,
+    janitor
 Remotes: 
     mattcowgill/readabs
 Depends: 
