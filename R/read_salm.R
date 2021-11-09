@@ -48,7 +48,7 @@ download.file(url= matching_link[grepl("xlsx", matching_link)],
 raw_data <- readxl::read_excel(excel_location,
                                skip = 3)
 
-#prepare to pivot longer and change to character
+# change to character and prepare to pivot longer
 raw_data[,3:ncol(raw_data)] <- (sapply(raw_data[,3:ncol(raw_data)], as.character))
 
 
