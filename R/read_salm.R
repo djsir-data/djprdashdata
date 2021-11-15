@@ -28,25 +28,38 @@ read_salm <- function(file = tempfile(fileext = ".xlsx")) {
     rvest::html_nodes(".download-link") %>%
     rvest::html_attr("href")
 
+  purrr::map_dfr(c("sa2", "lga"),
+                 read_salm_table,
+                 links = links,
+                 link_text = link_text,
+                 file = file)
+}
+
+read_salm_table <- function(area_type = "sa2", links, link_text, file) {
+
+  area_type_text <- dplyr::if_else(area_type == "sa2",
+                              "SALM SA2 Data",
+                              "SALM LGA Data")
+
   # Find which link on the page contains "small area labour market data
 
-  matching_link <- links[grepl("SALM SA2 Data", link_text)]
+  matching_link <- links[grepl(area_type_text, link_text)]
 
   matching_link <- paste0("https://lmip.gov.au/", matching_link)
 
-  excel_location <- tempfile(fileext = ".xlsx")
+  matching_link <- matching_link[grepl("xlsx", matching_link)]
 
   # Download the small labour market area data Excel file
 
   utils::download.file(
-    url = matching_link[grepl("xlsx", matching_link)],
-    destfile = excel_location,
+    url = matching_link,
+    destfile = file,
     mode = "wb"
   )
 
   # Load the Excel file
-  raw_data <- readxl::read_excel(excel_location,
-    skip = 3
+  raw_data <- readxl::read_excel(file,
+                                 skip = 3
   )
 
   # change to character and prepare to pivot longer
@@ -55,23 +68,24 @@ read_salm <- function(file = tempfile(fileext = ".xlsx")) {
                                 as.character))
 
   # change the Excel date to dates
-  df_SA2x <- raw_data %>%
+  df <- raw_data %>%
     tidyr::pivot_longer(3:ncol(raw_data),
-      names_to = "date",
-      values_to = "value"
+                        names_to = "date",
+                        values_to = "value"
     ) %>%
     dplyr::mutate(
       date = janitor::excel_numeric_to_date(as.numeric(.data$date)),
       value = suppressWarnings(as.numeric(.data$value))
     )
 
-  Victoria_sa2 <- df_SA2x %>%
+  df <- df %>%
+    dplyr::rename(area = 1, area_code = 2) %>%
+    dplyr::mutate(area_type = area_type)
+
+  vic <- df %>%
     dplyr::filter(.data$value != "NA") %>%
-    dplyr::filter(substr(.data$`SA2 Code (2016 ASGS)`, 1, 1) == "2")
+    dplyr::filter(substr(.data$area_code, 1, 1) == "2")
 
-  Victoria_sa2 <- Victoria_sa2 %>%
-    dplyr::rename(sa2 = .data$`Statistical Area Level 2 (SA2) (2016 ASGS)`,
-                  sa2_code = .data$`SA2 Code (2016 ASGS)`)
-
-  Victoria_sa2
+  vic
 }
+
