@@ -23,12 +23,12 @@ read_salm <- function(file = tempfile(fileext = ".xlsx")) {
 lmip_page <-  rvest::read_html(url)
 
 link_text <- lmip_page %>%
-            rvest::html_nodes(".download-link") %>%
-            html_text()
+  rvest::html_nodes(".download-link") %>%
+  rvest::html_text()
 
 links <- lmip_page %>%
           rvest::html_nodes(".download-link") %>%
-          html_attr("href")
+          rvest::html_attr("href")
 
 # Find which link on the page contains "small area labour market data
 
@@ -63,4 +63,6 @@ df_SA2x <- raw_data %>%
 Victoria_sa2 <- df_SA2x %>%
   dplyr::filter(value != "NA") %>%
   dplyr::filter(substr(`SA2 Code (2016 ASGS)`,1,1) == "2")
+
+Victoria_sa2
 }
