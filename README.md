@@ -31,7 +31,7 @@ The `refresh_data.R` script is executed on a schedule using GitHub
 Actions.
 
 The last time the script was run to check for new data was 2021-11-24
-12:26:02 Melbourne time.
+12:55:07 Melbourne time.
 
 The last time new data was found was 2021-11-18 11:36:00 Melbourne time.
 
