@@ -380,6 +380,15 @@ stopifnot(nrow(jobactive) > 8000)
 abs_lfs <- abs_lfs %>%
   bind_rows(jobactive)
 
+# Get SALM data -----
+salm <- read_salm()
+
+stopifnot(length(salm) == 9)
+stopifnot(nrow(salm) > 20000)
+
+abs_lfs <- abs_lfs %>%
+  bind_rows(salm)
+
 # Check if data updated -----
 new_rows <- nrow(abs_lfs)
 data_updated <- old_rows != new_rows
