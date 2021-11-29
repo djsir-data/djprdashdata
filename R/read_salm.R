@@ -28,11 +28,41 @@ read_salm <- function(file = tempfile(fileext = ".xlsx")) {
     rvest::html_nodes(".download-link") %>%
     rvest::html_attr("href")
 
-  purrr::map_dfr(c("sa2", "lga"),
+  salm <- purrr::map_dfr(c("sa2", "lga"),
                  read_salm_table,
                  links = links,
                  link_text = link_text,
                  file = file)
+
+  salm <- salm %>%
+    dplyr::mutate(series = paste(
+      "SALM",
+      .data$area_type,
+      .data$area_code,
+      .data$area,
+      sep = " ; "
+    ),
+    series_id = tolower(paste(
+      "salm",
+      .data$area_type,
+      .data$area_code,
+      .data$area,
+      sep = "_"
+    )),
+    series_type = "Seasonally Adjusted",
+    data_type = "STOCK",
+    table_no = "SALM",
+    frequency = "Quarter",
+    unit = "Percent"
+    ) %>%
+    dplyr::select(
+      .data$date, .data$value, .data$series,
+      .data$series_id, .data$series_type, .data$data_type,
+      .data$table_no, .data$frequency, .data$unit
+    )
+
+  salm
+
 }
 
 read_salm_table <- function(area_type = "sa2", links, link_text, file) {
