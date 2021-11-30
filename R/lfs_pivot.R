@@ -64,7 +64,7 @@ get_lfs_em2b <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
 
   if (!all_states) {
     tidy_pivot <- tidy_pivot %>%
-      dplyr::filter(state == "Victoria")
+      dplyr::filter(.data$state == "Victoria")
   }
 
   tidy_pivot <- tidy_pivot %>%
