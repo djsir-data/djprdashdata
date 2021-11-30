@@ -22,12 +22,76 @@ get_tidy_lfs_pivots <- function(path = Sys.getenv("R_READABS_PATH", unset = temp
     path = path
   )
 
+  lfs_em2b <- get_lfs_em2b(
+    path = path
+  )
+
   dplyr::bind_rows(
     lfs_lm1,
     lfs_eq03,
     lfs_um2,
-    lfs_rm1
+    lfs_rm1,
+    lfs_em2b
   )
+}
+
+get_lfs_em2b <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
+                         all_states = FALSE) {
+  raw_pivot <- get_lfs_pivot("EM2b",
+                             path = path
+  )
+
+  names(raw_pivot) <- c("date",
+                        "actual_hours_bin",
+                        "reason_fewer",
+                        "state",
+                        "Employed full-time",
+                        "Employed part-time",
+                        "Number of hours actually worked in all jobs (employed full-time)",
+                        "Number of hours actually worked in all jobs (employed part-time)")
+
+  tidy_pivot <- raw_pivot %>%
+    tidyr::pivot_longer(
+      cols = !dplyr::one_of(c(
+        "date",
+        "actual_hours_bin",
+        "reason_fewer",
+        "state"
+      )),
+      names_to = "indicator",
+      values_to = "value"
+    )
+
+  if (!all_states) {
+    tidy_pivot <- tidy_pivot %>%
+      dplyr::filter(.data$state == "Victoria")
+  }
+
+  tidy_pivot <- tidy_pivot %>%
+    dplyr::mutate(
+      series_type = "Original",
+      table_no = "EM2b",
+      data_type = "STOCK",
+      frequency = "Month",
+      unit = "000",
+      cat_no = "6291.0.55.001"
+    )
+
+  tidy_pivot <- tidy_pivot %>%
+    dplyr::mutate(series = paste(.data$indicator,
+                                 .data$actual_hours_bin,
+                                 .data$reason_fewer,
+                                 .data$state,
+                                 sep = " ; "),
+                  series_id = tolower(paste(.data$indicator,
+                                            .data$actual_hours_bin,
+                                            .data$reason_fewer,
+                                            .data$state,
+                                    sep = "_"))) %>%
+    dplyr::select(-.data$actual_hours_bin,
+                  -.data$reason_fewer)
+
+  tidy_pivot
 }
 
 #' Download and tidy data cube LM1 from detailed labour force
