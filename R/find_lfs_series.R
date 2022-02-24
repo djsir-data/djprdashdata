@@ -593,77 +593,17 @@ find_lfs_series <- function(indicator,
                             marital_status = "",
                             relship_in_hhold = "",
                             dependents = "") {
-  arg_list <- list(
-    indicator,
-    series_type,
-    state,
-    sex,
-    age,
-    industry,
-    industry_subdiv,
-    occupation,
-    sa4,
-    sector,
-    gcc_restofstate,
-    duration_of_unemp,
-    education_attendance,
-    highest_ed,
-    status_in_emp,
-    market_nonmarket,
-    hours,
-    duration_with_employer,
-    exp_future_emp,
-    current_lfs,
-    marital_status,
-    relship_in_hhold,
-    dependents
-  )
 
-  arg_vec <- c(
-    "indicator",
-    "series_type",
-    "state",
-    "sex",
-    "age",
-    "industry",
-    "industry_subdiv",
-    "occupation",
-    "sa4",
-    "sector",
-    "gcc_restofstate",
-    "duration_of_unemp",
-    "education_attendance",
-    "highest_ed",
-    "status_in_emp",
-    "market_nonmarket",
-    "hours",
-    "duration_with_employer",
-    "exp_future_emp",
-    "current_lfs",
-    "marital_status",
-    "relship_in_hhold",
-    "dependents"
-  )
+  # Collect all arguments to this function in a list
+  arg_list <- as.list(environment())
 
-  arg_list <- purrr::map(arg_list, tolower)
-  arg_list <- purrr::set_names(
-    arg_list,
-    arg_vec
-  )
-
-  # Ignore case when testing for equality
-  is_in <- function(x, y) {
-    x <- tolower(x)
-    y <- tolower(y)
-    x %in% y
-    # To make it less strict?
-    # grepl(y, x)
-  }
-
+  # The extra brackets around (dplyr::if_all(...)) work around a bug in
+  # dplyr-1.0.8. They are supposed to do nothing, but `dplyr::cur_column()`
+  # throws an error without them.
   lfs_lookup %>%
-    dplyr::filter(dplyr::across(
-      .cols = dplyr::all_of(arg_vec),
-      .fns = ~ is_in(.x, arg_list[[dplyr::cur_column()]])
-    )) %>%
+    dplyr::filter((dplyr::if_all(
+      .cols = dplyr::all_of(names(arg_list)),
+      .fns = ~ tolower(.x) %in% tolower(arg_list[[dplyr::cur_column()]])
+    ))) %>%
     dplyr::pull(.data$series_id)
 }

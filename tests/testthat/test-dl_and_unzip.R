@@ -11,7 +11,7 @@ test_that("dl_and_unzip downloads and unzips", {
 
   # Test Excel files exist
   expect_true(dir.exists(ts_dir))
-  expect_true(all(tools::file_ext(ts_files) == "xls"))
+  expect_true(all(tools::file_ext(ts_files) %in% c("xls", "xlsx")))
 
   # Test Excel files are non-zero size
   expect_gt(min(file.size(ts_files)), 50000)
