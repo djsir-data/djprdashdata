@@ -660,10 +660,13 @@ find_lfs_series <- function(indicator,
     # grepl(y, x)
   }
 
+  # The extra brackets around (dplyr::if_all(...)) work around a bug in
+  # dplyr-1.0.8. They are supposed to do nothing, but `dplyr::cur_column()`
+  # throws an error without them.
   lfs_lookup %>%
-    dplyr::filter(dplyr::across(
+    dplyr::filter((dplyr::if_all(
       .cols = dplyr::all_of(arg_vec),
       .fns = ~ is_in(.x, arg_list[[dplyr::cur_column()]])
-    )) %>%
+    ))) %>%
     dplyr::pull(.data$series_id)
 }
