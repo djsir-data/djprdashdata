@@ -391,7 +391,9 @@ abs_lfs <- abs_lfs %>%
 
 # Check if data updated -----
 new_rows <- nrow(abs_lfs)
-data_updated <- old_rows != new_rows
+# `old_rows` is normally loaded from `sysdata.rda` and will not exist
+# if that file was cleared.
+data_updated <- !exists("old_rows") || (old_rows != new_rows)
 
 # Perform checks and save ----
 
@@ -423,18 +425,17 @@ if (data_updated) {
 }
 
 # Update last_refreshed -----
-# Save file containing time that this script was last run
-last_refreshed <- format(Sys.time(), tz = "Australia/Melbourne", usetz = TRUE)
-file_conn <- file(here::here("data-raw", "last_refreshed.txt"))
-writeLines(as.character(Sys.time()), file_conn)
-close(file_conn)
+# Save file containing time that this script was last run.
+# Use a fixed timezone so the result is the same whether this is run on
+# a cloud machine or a local laptop.
+last_refreshed <-
+  lubridate::now(tzone = "Australia/Melbourne") |>
+  lubridate::format_ISO8601(usetz = T)
+writeLines(last_refreshed, here::here("data-raw/last_refreshed.txt"))
 
 if (data_updated) {
-  last_updated <- last_refreshed
-  file_conn <- file(here::here("data-raw", "last_updated.txt"))
-  writeLines(as.character(Sys.time()), file_conn)
-  close(file_conn)
-  saveRDS(last_updated, file = here::here("data-raw", "last_updated.rds"))
+  last_updated <- last_refreshed # saved to sysdata.rda
+  writeLines(last_updated, here::here("data-raw/last_updated.txt"))
 }
 
 # Lookup table for LFS series IDs -----

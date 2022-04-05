@@ -20,20 +20,20 @@ using the package’s functions. The data itself is saved in `data-raw`.
 
 This public data is used in the DJPR Jobs Dashboard. See:
 
-  - The [`djprlabourdash`](https://github.com/djpr-data/djprlabourdash)
+-   The [`djprlabourdash`](https://github.com/djpr-data/djprlabourdash)
     GitHub repo for the Jobs Dashboard code; and
 
-  - The [live dashboard](https://djpr-spp.shinyapps.io/djprlabourdash/).
+-   The [live dashboard](https://djpr-spp.shinyapps.io/djprlabourdash/).
 
 ## Last refresh date
 
 The `refresh_data.R` script is executed on a schedule using GitHub
 Actions.
 
-The last time the script was run to check for new data was 2022-04-05
-12:52:05 Melbourne time.
+The last time the script was run to check for new data was 2022-04-06
+01:04:57 AEST.
 
-The last time new data was found was 2022-03-24 11:38:26 Melbourne time.
+The last time new data was found was 2022-04-06 01:04:57 AEST.
 
 ## Modifying the data stored in this repository
 
@@ -77,7 +77,7 @@ Jobs Dashboard. To add time series to this file, follow these steps:
 9.  R will now run the `refresh_data.R` script. If it does not encounter
     any errors, the data in the project will update. You should see
     console output that ends with something like this;
-    
+
     ![](images/Screen%20Shot%202021-07-28%20at%2010.55.44%20am.png)
 
 10. In the `Git` pane of RStudio, stage and commit all modified files,

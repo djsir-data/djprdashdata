@@ -38,18 +38,20 @@ This public data is used in the DJPR Jobs Dashboard. See:
 The `refresh_data.R` script is executed on a schedule using GitHub Actions.
 
 ```{r, include=FALSE}
-ref_date <- readLines(here::here("data-raw", "last_refreshed.txt"))
-ref_date <- as.POSIXct(ref_date)
-ref_date <- format(ref_date, tz = "Australia/Melbourne")
+ref_date <- readLines(here::here("data-raw", "last_refreshed.txt")) |>
+  lubridate::ymd_hms() |>
+  lubridate::with_tz("Australia/Melbourne") |>
+  as.character(usetz = T)
 
-update_date <- readLines(here::here("data-raw", "last_updated.txt"))
-update_date <- as.POSIXct(update_date)
-update_date <- format(update_date, tz = "Australia/Melbourne")
+update_date <- readLines(here::here("data-raw", "last_updated.txt")) |>
+  lubridate::ymd_hms() |>
+  lubridate::with_tz("Australia/Melbourne") |>
+  as.character(usetz = T)
 ```
 
-The last time the script was run to check for new data was `r ref_date` Melbourne time. 
+The last time the script was run to check for new data was `r ref_date`. 
 
-The last time new data was found was `r update_date` Melbourne time.
+The last time new data was found was `r update_date`.
 
 ## Modifying the data stored in this repository
 
