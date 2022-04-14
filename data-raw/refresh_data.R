@@ -4,6 +4,18 @@ library(tidyr)
 
 options(timeout = 180)
 
+
+# Setup objects for error handling
+`%iferror%` <- function(a, b) tryCatch({a}, error = function(e){
+  warning(e)
+  {b}
+  })
+
+attach("R/sysdata.rda")
+old_data <- abs_lfs
+detach("file:R/sysdata.rda")
+
+
 # Load LFS data -----
 # Define ABS series IDs of interest -----
 lfs_ids <- c(
@@ -372,7 +384,9 @@ abs_lfs <- lfs_pivot %>%
   bind_rows(abs_lfs)
 
 # Get jobactive data -----
-jobactive <- read_jobactive()
+jobactive <- read_jobactive() %iferror%
+  old_data %>%
+  filter(table_no == "jobactive")
 
 stopifnot(length(jobactive) == 9)
 stopifnot(nrow(jobactive) > 8000)
@@ -381,7 +395,9 @@ abs_lfs <- abs_lfs %>%
   bind_rows(jobactive)
 
 # Get SALM data -----
-salm <- read_salm()
+salm <- read_salm() %iferror%
+  old_data %>%
+  filter(table_no == "SALM")
 
 stopifnot(length(salm) == 9)
 stopifnot(nrow(salm) > 20000)
