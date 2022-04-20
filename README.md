@@ -30,8 +30,8 @@ This public data is used in the DJPR Jobs Dashboard. See:
 The `refresh_data.R` script is executed on a schedule using GitHub
 Actions.
 
-The last time the script was run to check for new data was 2022-04-19
-12:46:45 AEST.
+The last time the script was run to check for new data was 2022-04-20
+10:11:00 AEST.
 
 The last time new data was found was 2022-04-14 12:00:10 AEST.
 
