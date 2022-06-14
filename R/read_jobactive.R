@@ -17,26 +17,26 @@
 read_jobactive <- function(file = tempfile(fileext = ".xlsx")) {
 
   # Scrape Jobactive site
-  url <- "https://lmip.gov.au/default.aspx?LMIP/Downloads/EmploymentRegion"
+  url <- "https://labourmarketinsights.gov.au/regions/data-downloads/employment-regions-jobactive-downloads/"
 
   lmip_page <- rvest::read_html(url)
 
   lmip_nodes <- lmip_page %>%
-    rvest::html_nodes(".download-link")
+    rvest::html_nodes(".btn")
 
-  link_text <- lmip_nodes %>%
-    rvest::html_text()
+  link_data_event <- lmip_nodes %>%
+    rvest::html_attr("data-ga-event")
 
   links <- lmip_nodes %>%
     rvest::html_attr("href")
 
-  # Find which link on the page contains "jobactive caseload data"
-  matching_link <- links[grepl("jobactive Caseload Data",
-    link_text,
-    ignore.case = TRUE
-  )]
+  # Find which link on the page contains "jobactive caseload"
+  matching_link <- links[
+    stringr::str_detect(link_data_event, "Jobactive Caseload")
+    ] %>%
+    na.omit()
 
-  matching_link <- paste0("https://lmip.gov.au/", matching_link)
+  matching_link <- paste0("https://labourmarketinsights.gov.au", matching_link)
 
   # Download the jobactive caseload data Excel file
 
