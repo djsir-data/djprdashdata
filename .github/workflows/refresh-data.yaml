@@ -16,11 +16,32 @@ jobs:
   refresh-data:
     runs-on: macOS-latest
     env:
+      R_CONFIG_ACTIVE: github
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      PG_MASTER_USER: ${{ secrets.PG_MASTER_USER }}
+      PG_MASTER_PW: ${{ secrets.PG_MASTER_PW }}
+      PG_READ_OPEN_USER: ${{ secrets.PG_READ_OPEN_USER }}
+      PG_READ_OPEN_PW: ${{ secrets.PG_READ_OPEN_PW }}
     steps:
       - uses: actions/checkout@v2
       - uses: r-lib/actions/setup-r@master
       - uses: r-lib/actions/setup-pandoc@v1
+
+      - name: Get Github action IP
+        id: ip
+        uses: haythem/public-ip@v1.2
+      - name: Set AWS environment variables
+        run: |
+          echo "AWS_DEFAULT_REGION=ap-southeast-2" >> $GITHUB_ENV
+          echo "AWS_SG_NAME=sg-0107d396b582171a1" >> $GITHUB_ENV
+      - name: Add Github Actions IP to Security group
+        run: |
+          aws ec2 authorize-security-group-ingress --group-id ${{ env.AWS_SG_NAME }} --protocol tcp --port 5432 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ env.AWS_DEFAULT_REGION }}
+
       - name: Install packages
         run: Rscript -e 'install.packages(c("remotes", "pkgload", "rmarkdown", "usethis"), type = "binary")'
       - name: Install dependencies
