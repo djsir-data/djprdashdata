@@ -46,7 +46,7 @@ jobs:
       - name: Install packages
         run: Rscript -e 'install.packages(c("remotes", "pkgload", "rmarkdown", "usethis", "DBI", "dplyr", "lubridate"), type = "binary")'
       - name: Install Db connection package
-        run: Rscript -e 'remotes::install_github("djpr-data/djprConnect")'
+        run: Rscript -e 'remotes::install_github("djpr-data/djprConnect", auth_token = Sys.getenv("GITHUB_PAT")'
       - name: Install dependencies
         run: Rscript -e 'remotes::install_deps(type = "binary", force = FALSE, dependencies = TRUE)'
       - name: Get data
