@@ -439,7 +439,7 @@ if (data_updated) {
     here::here("data-raw", "abs-ts", "abs-lfs.qs")
   )
 
-  con <- djprConnect::djpr_connect(config = TRUE)
+  con <- djprConnect::djpr_connect(use_config = TRUE)
   DBI::dbWriteTable(con, name = 'abs_labour_force',
                     value = mutate(abs_lfs,
                                    timestamp = lubridate::now(tzone = "Australia/Melbourne")),
