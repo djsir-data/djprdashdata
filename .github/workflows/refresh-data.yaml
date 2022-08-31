@@ -18,7 +18,7 @@ jobs:
     runs-on: macOS-latest
     env:
       R_CONFIG_ACTIVE: github
-      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_PAT: ${{ secrets.MRJ_TOKEN }}
       PG_MASTER_USER: ${{ secrets.PG_MASTER_USER }}
       PG_MASTER_PW: ${{ secrets.PG_MASTER_PW }}
       PG_READ_OPEN_USER: ${{ secrets.PG_READ_OPEN_USER }}
