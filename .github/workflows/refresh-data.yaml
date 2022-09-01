@@ -32,15 +32,6 @@ jobs:
         id: ip
         uses: haythem/public-ip@v1.2
 
-      - name: Remove Github Actions IP from security group
-        run: |
-          aws ec2 revoke-security-group-ingress --group-id ${{ env.AWS_SG_NAME }} --protocol tcp --port 5432 --cidr ${{ steps.ip.outputs.ipv4 }}/32
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ${{ env.AWS_DEFAULT_REGION }}
-        if: always()
-
       - name: Set AWS environment variables
         run: |
           echo "AWS_DEFAULT_REGION=ap-southeast-2" >> $GITHUB_ENV
@@ -79,3 +70,4 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ env.AWS_DEFAULT_REGION }}
         if: always()
+
