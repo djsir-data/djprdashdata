@@ -42,7 +42,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ env.AWS_DEFAULT_REGION }}
       - name: Install packages
-        run: Rscript -e 'install.packages(c("remotes", "pkgload", "rmarkdown", "usethis", "DBI", "dplyr", "lubridate", "config", "RPostgres", "glue"), type = "binary")'
+        run: Rscript -e 'install.packages(c("remotes", "pkgload", "rmarkdown", "usethis", "DBI", "dplyr", "lubridate", "config", "RPostgres", "glue", "assertthat"), type = "binary")'
       - name: Install dependencies
         run: Rscript -e 'remotes::install_deps(type = "binary", force = FALSE, dependencies = TRUE)'
       - name: Install Db connection package
