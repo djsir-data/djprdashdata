@@ -27,11 +27,9 @@ jobs:
       - uses: actions/checkout@v2
       - uses: r-lib/actions/setup-r@master
       - uses: r-lib/actions/setup-pandoc@v1
-
       - name: Get Github action IP
         id: ip
         uses: haythem/public-ip@v1.2
-
       - name: Set AWS environment variables
         run: |
           echo "AWS_DEFAULT_REGION=ap-southeast-2" >> $GITHUB_ENV
@@ -43,13 +41,12 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ env.AWS_DEFAULT_REGION }}
-
       - name: Install packages
-        run: Rscript -e 'install.packages(c("remotes", "pkgload", "rmarkdown", "usethis", "DBI", "dplyr", "lubridate", "config"), type = "binary")'
-      - name: Install Db connection package
-        run: Rscript -e 'remotes::install_github("djpr-data/djprConnect", auth_token = Sys.getenv("GITHUB_PAT"))'
+        run: Rscript -e 'install.packages(c("remotes", "pkgload", "rmarkdown", "usethis", "DBI", "dplyr", "lubridate", "config", "RPostgres", "glue"), type = "binary")'
       - name: Install dependencies
         run: Rscript -e 'remotes::install_deps(type = "binary", force = FALSE, dependencies = TRUE)'
+      - name: Install Db connection package
+        run: Rscript -e 'remotes::install_github("djpr-data/djprConnect", auth_token = Sys.getenv("GITHUB_PAT"))'
       - name: Get data
         run: Rscript -e 'source(here::here("data-raw", "refresh_data.R"), echo = TRUE)'
       - name: Render README
@@ -61,7 +58,6 @@ jobs:
           git add .
           git commit -m 'refreshing data' || echo "No changes to commit"
           git push --force origin main || echo "No changes to commit"
-
       - name: Remove Github Actions IP from security group
         run: |
           aws ec2 revoke-security-group-ingress --group-id ${{ env.AWS_SG_NAME }} --protocol tcp --port 5432 --cidr ${{ steps.ip.outputs.ipv4 }}/32
@@ -70,4 +66,3 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ env.AWS_DEFAULT_REGION }}
         if: always()
-
