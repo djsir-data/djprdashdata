@@ -444,7 +444,6 @@ if (data_updated) {
                     value = mutate(abs_lfs,
                                    timestamp = lubridate::now(tzone = "Australia/Melbourne")),
                     overwrite = TRUE)
-  DBI::dbDisconnect(con)
 
 }
 
@@ -501,3 +500,10 @@ usethis::use_data(
   internal = FALSE,
   overwrite = TRUE
 )
+
+DBI::dbWriteTable(con, name = 'lfs_lookup',
+                  value = mutate(lfs_lookup,
+                                 timestamp = lubridate::now(tzone = "Australia/Melbourne")),
+                  overwrite = TRUE)
+
+DBI::dbDisconnect(con)
