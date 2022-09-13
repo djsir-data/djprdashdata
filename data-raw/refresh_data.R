@@ -501,7 +501,7 @@ usethis::use_data(
   overwrite = TRUE
 )
 
-DBI::dbWriteTable(con, name = 'lfs_lookup',
+DBI::dbWriteTable(con, name = 'abs_lfs_lookup',
                   value = mutate(lfs_lookup,
                                  timestamp = lubridate::now(tzone = "Australia/Melbourne")),
                   overwrite = TRUE)
