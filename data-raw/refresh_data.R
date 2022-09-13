@@ -501,9 +501,17 @@ usethis::use_data(
   overwrite = TRUE
 )
 
-DBI::dbWriteTable(con, name = 'abs_lfs_lookup',
-                  value = mutate(lfs_lookup,
-                                 timestamp = lubridate::now(tzone = "Australia/Melbourne")),
-                  overwrite = TRUE)
+DBI::dbWriteTable(
+  con, 
+  name = 'abs_lfs_lookup',
+  value = lfs_lookup |>
+    dplyr::select(-dplyr::one_of(c(
+      "cat_no",
+      "table_no",
+      "series",
+      "series_type"
+      ))) |> 
+    mutate(timestamp = lubridate::now(tzone = "Australia/Melbourne")),
+  overwrite = TRUE)
 
 DBI::dbDisconnect(con)
