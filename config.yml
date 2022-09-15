@@ -1,0 +1,24 @@
+default:
+  dataconnection:
+    use_DBcache: FALSE
+    dbname: "opendata"
+    host: '10.210.1.26'
+    user:  !expr if(Sys.getenv("PG_SUSER") == "") Sys.getenv("PG_READ_OPEN_USER") else Sys.getenv("PG_SUSER")
+    password: !expr if(Sys.getenv("PG_SUSER_PW") == "") Sys.getenv("PG_READ_OPEN_PW") else Sys.getenv("PG_SUSER_PW")
+    port: 443
+shinyapps:
+  dataconnection:
+    use_DBcache: FALSE
+    dbname: "opendata"
+    host: 'sppdatarepo1.caz6tvdhkmqm.ap-southeast-2.rds.amazonaws.com'
+    user:  !expr Sys.getenv("PG_READ_OPEN_USER")
+    password: !expr Sys.getenv("PG_READ_OPEN_PW")
+    port: 5432
+github:
+  dataconnection:
+    use_DBcache: FALSE
+    dbname: "opendata"
+    host: 'sppdatarepo1.caz6tvdhkmqm.ap-southeast-2.rds.amazonaws.com'
+    user:  !expr Sys.getenv("PG_MASTER_USER")
+    password: !expr Sys.getenv("PG_MASTER_PW")
+    port: 5432

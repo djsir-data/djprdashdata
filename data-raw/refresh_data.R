@@ -413,6 +413,10 @@ data_updated <- !exists("old_rows") || (old_rows != new_rows)
 
 # Perform checks and save ----
 
+try({
+  con <- djprConnect::djpr_connect(use_config = TRUE)
+})
+
 if (data_updated) {
   test_results <- c(
     all(lfs_ids %in% abs_lfs$series_id),
@@ -438,6 +442,16 @@ if (data_updated) {
     abs_lfs,
     here::here("data-raw", "abs-ts", "abs-lfs.qs")
   )
+
+  try({
+
+    DBI::dbWriteTable(con, name = 'abs_labour_force',
+                      value = mutate(abs_lfs,
+                                     timestamp = lubridate::now(tzone = "Australia/Melbourne")),
+                      overwrite = TRUE)
+
+  })
+
 }
 
 # Update last_refreshed -----
@@ -493,3 +507,21 @@ usethis::use_data(
   internal = FALSE,
   overwrite = TRUE
 )
+
+
+try({
+  DBI::dbWriteTable(
+    con,
+    name = 'abs_lfs_lookup',
+    value = lfs_lookup |>
+      dplyr::select(-dplyr::one_of(c(
+        "cat_no",
+        "table_no",
+        "series",
+        "series_type"
+      ))) |>
+      mutate(timestamp = lubridate::now(tzone = "Australia/Melbourne")),
+    overwrite = TRUE)
+
+  DBI::dbDisconnect(con)
+})
