@@ -11,12 +11,13 @@
 #' read_salm()
 #' @export
 #' @importFrom dplyr .data
+#' @import djprdata
 
 
 read_salm <- function(file = tempfile(fileext = ".xlsx")) {
 
   # Scrape SALM  site
-  url <- "https://lmip.gov.au/default.aspx?LMIP/Downloads/SmallAreaLabourMarketsSALM/Estimates"
+  url <- djprdata:::urls$read_salm
 
   lmip_page <- rvest::read_html(url)
 
@@ -24,14 +25,12 @@ read_salm <- function(file = tempfile(fileext = ".xlsx")) {
     rvest::html_nodes(".download-link") %>%
     rvest::html_text()
 
-  links <- lmip_page %>%
-    rvest::html_nodes(".download-link") %>%
-    rvest::html_attr("href")
+  links <- djprdata:::get_latest_download_url(djprdata:::urls$read_salm,
+                                              'salm-smoothed-sa2|salm-smoothed-lga')$url
 
   salm <- purrr::map_dfr(c("sa2", "lga"),
                  read_salm_table,
                  links = links,
-                 link_text = link_text,
                  file = file)
 
   salm <- salm %>%
@@ -65,19 +64,14 @@ read_salm <- function(file = tempfile(fileext = ".xlsx")) {
 
 }
 
-read_salm_table <- function(area_type = "sa2", links, link_text, file) {
+read_salm_table <- function(area_type = "sa2", links, file) {
 
   area_type_text <- dplyr::if_else(area_type == "sa2",
                               "SALM SA2 Data",
                               "SALM LGA Data")
 
   # Find which link on the page contains "small area labour market data
-
-  matching_link <- links[grepl(area_type_text, link_text)]
-
-  matching_link <- paste0("https://lmip.gov.au/", matching_link)
-
-  matching_link <- matching_link[grepl("xlsx", matching_link)]
+  matching_link <- links[grepl(area_type, links) & grepl('\\.xlsx', links)]
 
   # Download the small labour market area data Excel file
 
