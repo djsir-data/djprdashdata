@@ -31,7 +31,7 @@ Imports:
     lubridate
 Remotes: 
     mattcowgill/readabs,
-    djpr-data/djprdata
+    djsir-data/djprdata
 Depends: 
     R (>= 2.10)
 Suggests: 
