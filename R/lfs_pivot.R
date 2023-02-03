@@ -26,12 +26,17 @@ get_tidy_lfs_pivots <- function(path = Sys.getenv("R_READABS_PATH", unset = temp
     path = path
   )
 
+  lfs_eq08 <- get_lfs_eq08(
+    path = path
+  )
+
   dplyr::bind_rows(
     lfs_lm1,
     lfs_eq03,
     lfs_um2,
     lfs_rm1,
-    lfs_em2b
+    lfs_em2b,
+    lfs_eq08
   )
 }
 
