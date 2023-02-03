@@ -323,6 +323,86 @@ get_lfs_um2 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
 }
 
 
+#' Download and tidy data cube EQ08 from detailed Labour Force
+#' @noRd
+get_lfs_eq08 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
+                         all_states = TRUE) {
+  raw_pivot <- get_lfs_pivot(cube = "EQ08")
+
+  names(raw_pivot) <- c(
+    "date",
+    "sex",
+    "state",
+    "occupation",
+    "Employed total",
+    "Employed part-time",
+    "Number of hours actually worked in all jobs"
+  )
+
+  if (isFALSE(all_states)) {
+    raw_pivot <- raw_pivot %>%
+      dplyr::filter(.data$state == "Victoria")
+
+  }
+
+  tidy_pivot <- raw_pivot %>%
+    tidyr::pivot_longer(
+      cols = !dplyr::one_of(c(
+        "date",
+        "sex",
+        "state",
+        "occupation"
+      )),
+      names_to = "indicator",
+      values_to = "value"
+    )
+
+  # Create series IDs
+  tidy_pivot <- tidy_pivot %>%
+    dplyr::mutate(
+      series_id = paste(.data$sex,
+        .data$state,
+        .data$occupation,
+        .data$indicator,
+        sep = "_"
+      ) %>% tolower(),
+      series = paste(.data$indicator,
+        .data$state,
+        .data$sex,
+        .data$occupation,
+        sep = " ; "
+      ),
+      series_type = "Original",
+      table_no = "EQ08",
+      data_type = "STOCK",
+      frequency = "Month",
+      unit = "000",
+      cat_no = "6291.0.55.001"
+    )
+
+  # Collapse Ocuupation into 8 major groups
+  # tidy_pivot <- tidy_pivot %>%
+  #   dplyr::mutate(occupation = str_sub(occupation, 1, 1)) %>%
+  #                   group_by(occup) %>%
+  #                   mutate(
+  #                     occup= case_when(
+  #                       occup == '1' ~'Managers',
+  #                       occup == '2' ~ 'Professionals',
+  #                       occup == '3' ~ 'Technicians and Trades Workers',
+  #                       occup == '4' ~ 'Community and Personal Service Workers',
+  #                       occup == '5' ~ 'Clerical and Administrative Workers',
+  #                       occup == '6' ~ 'Sales Workers',
+  #                       occup == '7' ~ 'Machinery Operators and Drivers',
+  #                       occup == '8' ~ 'Labourers'
+  #                     ))
+
+
+
+
+
+  tidy_pivot
+}
+
 #' Download and tidy data cube EQ03 from detailed Labour Force
 #' @noRd
 get_lfs_eq03 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
@@ -356,16 +436,16 @@ get_lfs_eq03 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
   tidy_pivot <- tidy_pivot %>%
     dplyr::mutate(
       series_id = paste(.data$sex,
-        .data$gcc_restofstate,
-        .data$industry,
-        .data$indicator,
-        sep = "_"
+                        .data$gcc_restofstate,
+                        .data$industry,
+                        .data$indicator,
+                        sep = "_"
       ) %>% tolower(),
       series = paste(.data$indicator,
-        .data$gcc_restofstate,
-        .data$sex,
-        .data$industry,
-        sep = " ; "
+                     .data$gcc_restofstate,
+                     .data$sex,
+                     .data$industry,
+                     sep = " ; "
       ),
       series_type = "Original",
       table_no = "EQ03",
@@ -381,9 +461,12 @@ get_lfs_eq03 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
         "Greater Melbourne",
         "Rest of Vic."
       ))
-  }
+
+    }
 
   tidy_pivot
+
+
 }
 
 #' Download and tidy data cube EQ03 from detailed Labour Force
