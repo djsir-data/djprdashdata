@@ -326,7 +326,7 @@ get_lfs_um2 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
 #' Download and tidy data cube EQ08 from detailed Labour Force
 #' @noRd
 get_lfs_eq08 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
-                         all_states = TRUE) {
+                         all_states = FALSE) {
   raw_pivot <- get_lfs_pivot(cube = "EQ08")
 
   names(raw_pivot) <- c(
@@ -335,7 +335,6 @@ get_lfs_eq08 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
     "state",
     "occupation",
     "Employed total",
-    "Employed part-time",
     "Number of hours actually worked in all jobs"
   )
 
@@ -356,6 +355,23 @@ get_lfs_eq08 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
       names_to = "indicator",
       values_to = "value"
     )
+
+  tidy_pivot <- tidy_pivot %>%
+    dplyr::mutate(occupation = stringr::str_sub(occupation, 1, 1)) %>%
+    dplyr::mutate(occupation = dplyr::case_when(
+      occupation == '1' ~'Managers',
+      occupation == '2' ~ 'Professionals',
+      occupation == '3' ~ 'Technicians and Trades Workers',
+      occupation == '4' ~ 'Community and Personal Service Workers',
+      occupation == '5' ~ 'Clerical and Administrative Workers',
+      occupation == '6' ~ 'Sales Workers',
+      occupation == '7' ~ 'Machinery Operators and Drivers',
+      occupation == '8' ~ 'Labourers'
+    )) %>%
+  dplyr::group_by(.data$occupation,
+          .data$date
+  ) %>%
+    dplyr::summarise(value= sum(value))
 
   # Create series IDs
   tidy_pivot <- tidy_pivot %>%
@@ -380,23 +396,7 @@ get_lfs_eq08 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
       cat_no = "6291.0.55.001"
     )
 
-  # Collapse Ocuupation into 8 major groups
-  # tidy_pivot <- tidy_pivot %>%
-  #   dplyr::mutate(occupation = str_sub(occupation, 1, 1)) %>%
-  #                   group_by(occup) %>%
-  #                   mutate(
-  #                     occup= case_when(
-  #                       occup == '1' ~'Managers',
-  #                       occup == '2' ~ 'Professionals',
-  #                       occup == '3' ~ 'Technicians and Trades Workers',
-  #                       occup == '4' ~ 'Community and Personal Service Workers',
-  #                       occup == '5' ~ 'Clerical and Administrative Workers',
-  #                       occup == '6' ~ 'Sales Workers',
-  #                       occup == '7' ~ 'Machinery Operators and Drivers',
-  #                       occup == '8' ~ 'Labourers'
-  #                     ))
-
-
+  #Collapse Ocuupation into 8 major groups
 
 
 
