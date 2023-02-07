@@ -338,11 +338,6 @@ get_lfs_eq08 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
     "Number of hours actually worked in all jobs"
   )
 
-  if (isFALSE(all_states)) {
-    raw_pivot <- raw_pivot %>%
-      dplyr::filter(.data$state == "Victoria")
-
-  }
 
   tidy_pivot <- raw_pivot %>%
     tidyr::pivot_longer(
@@ -356,6 +351,7 @@ get_lfs_eq08 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
       values_to = "value"
     )
 
+
   tidy_pivot <- tidy_pivot %>%
     dplyr::mutate(occupation = stringr::str_sub(occupation, 1, 1)) %>%
     dplyr::mutate(occupation = dplyr::case_when(
@@ -368,10 +364,22 @@ get_lfs_eq08 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
       occupation == '7' ~ 'Machinery Operators and Drivers',
       occupation == '8' ~ 'Labourers'
     )) %>%
-  dplyr::group_by(.data$occupation,
-          .data$date
+  dplyr::group_by(.data$date,.data$occupation,.data$sex,
+          .data$indicator, .data$state
   ) %>%
-    dplyr::summarise(value= sum(value))
+    dplyr::summarise(value= sum(value)) %>%
+    dplyr::ungroup()
+
+
+  if (isFALSE(all_states)) {
+    tidy_pivot <-  tidy_pivot%>%
+      dplyr::filter(.data$state == "Victoria")
+
+  }
+
+  #  test <- tidy_pivot %>%
+  # dplyr::filter(date == max(date))
+
 
   # Create series IDs
   tidy_pivot <- tidy_pivot %>%
