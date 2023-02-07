@@ -266,7 +266,7 @@ get_lfs_lm1 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
   tidy_pivot
 }
 
-#' Download and tidy data cube EQ03 from detailed Labour Force
+#' Download and tidy data cube um2 from detailed Labour Force
 #' @noRd
 get_lfs_um2 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
                         all_states = FALSE) {
@@ -399,7 +399,7 @@ get_lfs_eq08 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
       series_type = "Original",
       table_no = "EQ08",
       data_type = "STOCK",
-      frequency = "Month",
+      frequency = "Quarter",
       unit = "000",
       cat_no = "6291.0.55.001"
     )
@@ -458,7 +458,7 @@ get_lfs_eq03 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
       series_type = "Original",
       table_no = "EQ03",
       data_type = "STOCK",
-      frequency = "Month",
+      frequency = "Quarter",
       unit = "000",
       cat_no = "6291.0.55.001"
     )
@@ -477,7 +477,7 @@ get_lfs_eq03 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
 
 }
 
-#' Download and tidy data cube EQ03 from detailed Labour Force
+#' Download and tidy data cube rm1 from detailed Labour Force
 #' @noRd
 get_lfs_rm1 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
                         all_states = TRUE) {
