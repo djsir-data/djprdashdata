@@ -26,12 +26,17 @@ get_tidy_lfs_pivots <- function(path = Sys.getenv("R_READABS_PATH", unset = temp
     path = path
   )
 
+  lfs_eq08 <- get_lfs_eq08(
+    path = path
+  )
+
   dplyr::bind_rows(
     lfs_lm1,
     lfs_eq03,
     lfs_um2,
     lfs_rm1,
-    lfs_em2b
+    lfs_em2b,
+    lfs_eq08
   )
 }
 
@@ -261,7 +266,7 @@ get_lfs_lm1 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
   tidy_pivot
 }
 
-#' Download and tidy data cube EQ03 from detailed Labour Force
+#' Download and tidy data cube um2 from detailed Labour Force
 #' @noRd
 get_lfs_um2 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
                         all_states = FALSE) {
@@ -318,6 +323,91 @@ get_lfs_um2 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
 }
 
 
+#' Download and tidy data cube EQ08 from detailed Labour Force
+#' @noRd
+get_lfs_eq08 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
+                         all_states = FALSE) {
+  raw_pivot <- get_lfs_pivot(cube = "EQ08")
+
+  names(raw_pivot) <- c(
+    "date",
+    "sex",
+    "state",
+    "occupation",
+    "Employed total",
+    "Number of hours actually worked in all jobs"
+  )
+
+
+  tidy_pivot <- raw_pivot %>%
+    tidyr::pivot_longer(
+      cols = !dplyr::one_of(c(
+        "date",
+        "sex",
+        "state",
+        "occupation"
+      )),
+      names_to = "indicator",
+      values_to = "value"
+    )
+
+  #Collapse Ocuupation into 8 major groups
+  tidy_pivot <- tidy_pivot %>%
+    dplyr::mutate(occupation = stringr::str_sub(occupation, 1, 1)) %>%
+    dplyr::mutate(occupation = dplyr::case_when(
+      occupation == '1' ~'Managers',
+      occupation == '2' ~ 'Professionals',
+      occupation == '3' ~ 'Technicians and Trades Workers',
+      occupation == '4' ~ 'Community and Personal Service Workers',
+      occupation == '5' ~ 'Clerical and Administrative Workers',
+      occupation == '6' ~ 'Sales Workers',
+      occupation == '7' ~ 'Machinery Operators and Drivers',
+      occupation == '8' ~ 'Labourers'
+    )) %>%
+  dplyr::group_by(.data$date,.data$occupation,.data$sex,
+          .data$indicator, .data$state
+  ) %>%
+    dplyr::summarise(value= sum(value)) %>%
+    dplyr::ungroup()
+
+
+  if (isFALSE(all_states)) {
+    tidy_pivot <-  tidy_pivot%>%
+      dplyr::filter(.data$state == "Victoria")
+
+  }
+
+
+  # Create series IDs
+  tidy_pivot <- tidy_pivot %>%
+    dplyr::mutate(
+      series_id = paste(.data$sex,
+        .data$state,
+        .data$occupation,
+        .data$indicator,
+        sep = "_"
+      ) %>% tolower(),
+      series = paste(.data$indicator,
+        .data$state,
+        .data$sex,
+        .data$occupation,
+        sep = " ; "
+      ),
+      series_type = "Original",
+      table_no = "EQ08",
+      data_type = "STOCK",
+      frequency = "Quarter",
+      unit = "000",
+      cat_no = "6291.0.55.001"
+    )
+
+
+
+
+
+  tidy_pivot
+}
+
 #' Download and tidy data cube EQ03 from detailed Labour Force
 #' @noRd
 get_lfs_eq03 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
@@ -351,21 +441,21 @@ get_lfs_eq03 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
   tidy_pivot <- tidy_pivot %>%
     dplyr::mutate(
       series_id = paste(.data$sex,
-        .data$gcc_restofstate,
-        .data$industry,
-        .data$indicator,
-        sep = "_"
+                        .data$gcc_restofstate,
+                        .data$industry,
+                        .data$indicator,
+                        sep = "_"
       ) %>% tolower(),
       series = paste(.data$indicator,
-        .data$gcc_restofstate,
-        .data$sex,
-        .data$industry,
-        sep = " ; "
+                     .data$gcc_restofstate,
+                     .data$sex,
+                     .data$industry,
+                     sep = " ; "
       ),
       series_type = "Original",
       table_no = "EQ03",
       data_type = "STOCK",
-      frequency = "Month",
+      frequency = "Quarter",
       unit = "000",
       cat_no = "6291.0.55.001"
     )
@@ -376,12 +466,15 @@ get_lfs_eq03 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
         "Greater Melbourne",
         "Rest of Vic."
       ))
-  }
+
+    }
 
   tidy_pivot
+
+
 }
 
-#' Download and tidy data cube EQ03 from detailed Labour Force
+#' Download and tidy data cube rm1 from detailed Labour Force
 #' @noRd
 get_lfs_rm1 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
                         all_states = TRUE) {
