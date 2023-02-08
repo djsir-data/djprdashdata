@@ -351,7 +351,7 @@ get_lfs_eq08 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
       values_to = "value"
     )
 
-
+  #Collapse Ocuupation into 8 major groups
   tidy_pivot <- tidy_pivot %>%
     dplyr::mutate(occupation = stringr::str_sub(occupation, 1, 1)) %>%
     dplyr::mutate(occupation = dplyr::case_when(
@@ -377,9 +377,6 @@ get_lfs_eq08 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
 
   }
 
-  #  test <- tidy_pivot %>%
-  # dplyr::filter(date == max(date))
-
 
   # Create series IDs
   tidy_pivot <- tidy_pivot %>%
@@ -404,7 +401,7 @@ get_lfs_eq08 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
       cat_no = "6291.0.55.001"
     )
 
-  #Collapse Ocuupation into 8 major groups
+
 
 
 
