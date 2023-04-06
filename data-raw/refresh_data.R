@@ -1,6 +1,7 @@
 pkgload::load_all()
 library(dplyr)
 library(tidyr)
+library(rvest)
 
 options(timeout = 180)
 
@@ -411,6 +412,56 @@ stopifnot(nrow(salm) > 20000)
 
 abs_lfs <- abs_lfs %>%
   bind_rows(salm)
+
+
+# Get ABS vacancy data
+
+vac <- readabs::read_abs(cat_no = "6354.0") %>%
+  filter(
+    series_type == "Original",
+    table_title != "TABLE 4. Job Vacancies, Industry, Australia ('000) - Original"
+    ) %>%
+  select(all_of(names(old_data))) %>%
+  drop_na()
+
+abs_lfs <- abs_lfs %>%
+  bind_rows(vac)
+
+
+# Get JSA Internet vacancy index
+ivi_link <- read_html(
+  "https://www.jobsandskills.gov.au/work/internet-vacancy-index"
+  ) %>%
+  html_elements("a.downloadLink") %>%
+  html_attr("href") %>%
+  stringr::str_subset("xlsx|XLSX") %>%
+  stringr::str_subset("regional|Regional|REGIONAL") %>%
+  paste0("https://www.jobsandskills.gov.au", .)
+
+ivi_tmp <- tempfile(fileext = ".xlsx")
+download.file(ivi_link, ivi_tmp, mode = "wb")
+
+ivi <- readxl::read_excel(ivi_tmp, sheet = "Averaged") %>%
+  unite(series, Level, State, region, ANZSCO_CODE) %>%
+  select(-ANZSCO_TITLE) %>%
+  pivot_longer(
+    -series,
+    names_to = "date",
+    values_to = "value"
+  ) %>%
+  mutate(
+    date = as.Date(as.numeric(date), origin = "1899-12-30"),
+    series_id = sapply(series, rlang::hash),
+    table_no = "ivi",
+    series_type = "Original",
+    data_type = "FLOW",
+    frequency = "Month",
+    unit = "Advertisements"
+  )
+
+abs_lfs <- abs_lfs %>%
+  bind_rows(ivi)
+
 
 # Check if data updated -----
 new_rows <- nrow(abs_lfs)
