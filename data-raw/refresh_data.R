@@ -429,19 +429,22 @@ abs_lfs <- abs_lfs %>%
 
 
 # Get JSA Internet vacancy index
-ivi_link <- read_html(
-  "https://www.jobsandskills.gov.au/work/internet-vacancy-index"
-  ) %>%
+ivi_tmp_html <- tempfile(fileext = ".html")
+download.file(
+  "https://www.jobsandskills.gov.au/work/internet-vacancy-index",
+  ivi_tmp_html
+)
+ivi_link <- read_html(ivi_tmp_html) %>%
   html_elements("a.downloadLink") %>%
   html_attr("href") %>%
   stringr::str_subset("xlsx|XLSX") %>%
   stringr::str_subset("regional|Regional|REGIONAL") %>%
   paste0("https://www.jobsandskills.gov.au", .)
 
-ivi_tmp <- tempfile(fileext = ".xlsx")
-download.file(ivi_link, ivi_tmp, mode = "wb")
+ivi_tmp_xlsx <- tempfile(fileext = ".xlsx")
+download.file(ivi_link, ivi_tmp_xlsx, mode = "wb")
 
-ivi <- readxl::read_excel(ivi_tmp, sheet = "Averaged") %>%
+ivi <- readxl::read_excel(ivi_tmp_xlsx, sheet = "Averaged") %>%
   unite(series, Level, State, region, ANZSCO_CODE) %>%
   select(-ANZSCO_TITLE) %>%
   pivot_longer(
