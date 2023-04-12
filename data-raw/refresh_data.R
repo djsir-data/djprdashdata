@@ -430,12 +430,17 @@ abs_lfs <- abs_lfs %>%
 
 # Get JSA Internet vacancy index
 try({
-  ivi_tmp_html <- tempfile(fileext = ".html")
-  download.file(
-    "https://www.jobsandskills.gov.au/work/internet-vacancy-index",
-    ivi_tmp_html
+
+  httr::set_config(
+    httr::user_agent(
+      "Mozilla/5.0 (Windows NT 5.1; rv:66.0) Gecko/20100101 Firefox/66.0"
+    )
   )
-  ivi_link <- read_html(ivi_tmp_html) %>%
+
+  ivi_link <- read_html(
+    "https://www.jobsandskills.gov.au/work/internet-vacancy-index",
+
+  ) %>%
     html_elements("a.downloadLink") %>%
     html_attr("href") %>%
     stringr::str_subset("xlsx|XLSX") %>%
