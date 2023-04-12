@@ -429,41 +429,44 @@ abs_lfs <- abs_lfs %>%
 
 
 # Get JSA Internet vacancy index
-ivi_tmp_html <- tempfile(fileext = ".html")
-download.file(
-  "https://www.jobsandskills.gov.au/work/internet-vacancy-index",
-  ivi_tmp_html
-)
-ivi_link <- read_html(ivi_tmp_html) %>%
-  html_elements("a.downloadLink") %>%
-  html_attr("href") %>%
-  stringr::str_subset("xlsx|XLSX") %>%
-  stringr::str_subset("regional|Regional|REGIONAL") %>%
-  paste0("https://www.jobsandskills.gov.au", .)
-
-ivi_tmp_xlsx <- tempfile(fileext = ".xlsx")
-download.file(ivi_link, ivi_tmp_xlsx, mode = "wb")
-
-ivi <- readxl::read_excel(ivi_tmp_xlsx, sheet = "Averaged") %>%
-  unite(series, Level, State, region, ANZSCO_CODE) %>%
-  select(-ANZSCO_TITLE) %>%
-  pivot_longer(
-    -series,
-    names_to = "date",
-    values_to = "value"
-  ) %>%
-  mutate(
-    date = as.Date(as.numeric(date), origin = "1899-12-30"),
-    series_id = sapply(series, rlang::hash),
-    table_no = "ivi",
-    series_type = "Original",
-    data_type = "FLOW",
-    frequency = "Month",
-    unit = "Advertisements"
+try({
+  ivi_tmp_html <- tempfile(fileext = ".html")
+  download.file(
+    "https://www.jobsandskills.gov.au/work/internet-vacancy-index",
+    ivi_tmp_html
   )
+  ivi_link <- read_html(ivi_tmp_html) %>%
+    html_elements("a.downloadLink") %>%
+    html_attr("href") %>%
+    stringr::str_subset("xlsx|XLSX") %>%
+    stringr::str_subset("regional|Regional|REGIONAL") %>%
+    paste0("https://www.jobsandskills.gov.au", .)
 
-abs_lfs <- abs_lfs %>%
-  bind_rows(ivi)
+  ivi_tmp_xlsx <- tempfile(fileext = ".xlsx")
+  download.file(ivi_link, ivi_tmp_xlsx, mode = "wb")
+
+  ivi <- readxl::read_excel(ivi_tmp_xlsx, sheet = "Averaged") %>%
+    unite(series, Level, State, region, ANZSCO_CODE) %>%
+    select(-ANZSCO_TITLE) %>%
+    pivot_longer(
+      -series,
+      names_to = "date",
+      values_to = "value"
+    ) %>%
+    mutate(
+      date = as.Date(as.numeric(date), origin = "1899-12-30"),
+      series_id = sapply(series, rlang::hash),
+      table_no = "ivi",
+      series_type = "Original",
+      data_type = "FLOW",
+      frequency = "Month",
+      unit = "Advertisements"
+    )
+
+  abs_lfs <- abs_lfs %>%
+    bind_rows(ivi)
+})
+
 
 
 # Check if data updated -----
