@@ -429,7 +429,7 @@ abs_lfs <- abs_lfs %>%
 
 
 # Get JSA Internet vacancy index
-try({
+tryCatch({
 
   httr::set_config(
     httr::user_agent(
@@ -470,7 +470,8 @@ try({
 
   abs_lfs <- abs_lfs %>%
     bind_rows(ivi)
-})
+},
+error = function(e) message("IVI data did not parse. Original error:\n", e))
 
 
 
