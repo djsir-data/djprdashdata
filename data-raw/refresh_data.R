@@ -430,33 +430,33 @@ abs_lfs <- abs_lfs %>%
 
 # Get JSA Internet vacancy index
 tryCatch({
-
+  
   httr::set_config(
     httr::user_agent(
       "Mozilla/5.0 (Windows NT 5.1; rv:66.0) Gecko/20100101 Firefox/66.0"
     )
   )
-
-  ivi_link <- tryCatch(
-    read_html(
-    "https://www.jobsandskills.gov.au/work/internet-vacancy-index",
-
-  ) %>%
-    html_elements("a.downloadLink") %>%
-    html_attr("href") %>%
-    stringr::str_subset("xlsx|XLSX") %>%
-    stringr::str_subset("regional|Regional|REGIONAL") %>%
-    paste0("https://www.jobsandskills.gov.au", .),
-  error = function(e){
-    message("Could not access jobsandskills.gov.au for link scraping - using old link")
-    message("Original error:\n", e)
-    "https://www.jobsandskills.gov.au/sites/default/files/2023-03/IVI_DATA_regional%20-%20May%202010%20onwards.xlsx"
-  }
+  
+  tryCatch(
+    ivi_link <- read_html(
+      "https://www.jobsandskills.gov.au/work/internet-vacancy-index",
+      
+    ) %>%
+      html_elements("a.downloadLink") %>%
+      html_attr("href") %>%
+      stringr::str_subset("xlsx|XLSX") %>%
+      stringr::str_subset("regional|Regional|REGIONAL") %>%
+      paste0("https://www.jobsandskills.gov.au", .),
+    error = function(e){
+      message("Could not access jobsandskills.gov.au for link scraping - using old link")
+      message("Original error:\n", e)
+      ivi_link <- "https://www.jobsandskills.gov.au/sites/default/files/2023-03/IVI_DATA_regional%20-%20May%202010%20onwards.xlsx"
+    }
   )
-
+  
   ivi_tmp_xlsx <- tempfile(fileext = ".xlsx")
   download.file(ivi_link, ivi_tmp_xlsx, mode = "wb")
-
+  
   ivi <- readxl::read_excel(ivi_tmp_xlsx, sheet = "Averaged") %>%
     unite(series, Level, State, region, ANZSCO_CODE) %>%
     select(-ANZSCO_TITLE) %>%
@@ -474,11 +474,19 @@ tryCatch({
       frequency = "Month",
       unit = "Advertisements"
     )
-
+  
   abs_lfs <- abs_lfs %>%
     bind_rows(ivi)
 },
-error = function(e) message("IVI data did not parse. Original error:\n", e))
+error = function(e){
+  message("IVI data did not parse. Original error:\n", e)
+  abs_lfs %>%
+    bind_rows(
+      old_data %>%
+        filter(table_no == "ivi")
+    )
+}
+)
 
 
 
