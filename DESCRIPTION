@@ -30,10 +30,11 @@ Imports:
     janitor,
     lubridate
 Remotes: 
-    mattcowgill/readabs,
-    djsir-data/djprdata
+    djsir-data/djprdata,
+    djsir-data/djprConnect
 Depends: 
     R (>= 2.10)
 Suggests: 
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    rcmdcheck
 Config/testthat/edition: 3
