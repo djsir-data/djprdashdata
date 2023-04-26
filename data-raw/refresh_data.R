@@ -418,8 +418,7 @@ abs_lfs <- abs_lfs %>%
 
 vac <- readabs::read_abs(cat_no = "6354.0") %>%
   filter(
-    series_type == "Original",
-    table_title != "TABLE 4. Job Vacancies, Industry, Australia ('000) - Original"
+    series_type == "Original"
     ) %>%
   select(all_of(names(old_data))) %>%
   drop_na()
