@@ -428,7 +428,7 @@ abs_lfs <- abs_lfs %>%
 
 
 # Get JSA Internet vacancy index
-try({
+tryCatch({
 
   httr::set_config(
     httr::user_agent(
@@ -436,7 +436,8 @@ try({
     )
   )
 
-  ivi_link <- read_html(
+  ivi_link <- tryCatch(
+    read_html(
     "https://www.jobsandskills.gov.au/work/internet-vacancy-index",
 
   ) %>%
@@ -444,7 +445,13 @@ try({
     html_attr("href") %>%
     stringr::str_subset("xlsx|XLSX") %>%
     stringr::str_subset("regional|Regional|REGIONAL") %>%
-    paste0("https://www.jobsandskills.gov.au", .)
+    paste0("https://www.jobsandskills.gov.au", .),
+  error = function(e){
+    message("Could not access jobsandskills.gov.au for link scraping - using old link")
+    message("Original error:\n", e)
+    "https://www.jobsandskills.gov.au/sites/default/files/2023-03/IVI_DATA_regional%20-%20May%202010%20onwards.xlsx"
+  }
+  )
 
   ivi_tmp_xlsx <- tempfile(fileext = ".xlsx")
   download.file(ivi_link, ivi_tmp_xlsx, mode = "wb")
@@ -469,7 +476,8 @@ try({
 
   abs_lfs <- abs_lfs %>%
     bind_rows(ivi)
-})
+},
+error = function(e) message("IVI data did not parse. Original error:\n", e))
 
 
 
