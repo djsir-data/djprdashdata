@@ -441,15 +441,10 @@ abs_lfs <- abs_lfs %>%
 
 
 # Get population data
-pop <- readabs::read_abs_series('A2060844K') |> select(date,
-                                                       value,
-                                                       series_id,
-                                                       series,
-                                                       series_type,
-                                                       table_no,
-                                                       data_type,
-                                                       frequency,
-                                                       unit)
+pop <- readabs::read_abs_series('A2060844K') |>
+  select(all_of(names(old_data))) %>%
+  drop_na()
+
 abs_lfs <- abs_lfs %>%
   bind_rows(pop)
 
