@@ -361,7 +361,6 @@ lfs_ids <- c(
   "A84090249V",
   "A84090264T",
   "A84932399X",
-  "A2060844K",
   "A84423688L"
 )
 
@@ -441,6 +440,19 @@ abs_lfs <- abs_lfs %>%
   bind_rows(salm)
 
 
+# Get population data
+pop <- readabs::read_abs_series('A2060844K') |> select(date,
+                                                       value,
+                                                       series_id,
+                                                       series,
+                                                       series_type,
+                                                       table_no,
+                                                       data_type,
+                                                       frequency,
+                                                       unit)
+abs_lfs <- abs_lfs %>%
+  bind_rows(pop)
+
 # Get ABS vacancy data
 
 vac <- readabs::read_abs(cat_no = "6354.0") %>%
@@ -456,17 +468,17 @@ abs_lfs <- abs_lfs %>%
 
 # Get JSA Internet vacancy index
 tryCatch({
-  
+
   httr::set_config(
     httr::user_agent(
       "Mozilla/5.0 (Windows NT 5.1; rv:66.0) Gecko/20100101 Firefox/66.0"
     )
   )
-  
+
   tryCatch(
     ivi_link <- read_html(
       "https://www.jobsandskills.gov.au/work/internet-vacancy-index",
-      
+
     ) %>%
       html_elements("a.downloadLink") %>%
       html_attr("href") %>%
@@ -479,10 +491,10 @@ tryCatch({
       ivi_link <- "https://www.jobsandskills.gov.au/sites/default/files/2023-03/IVI_DATA_regional%20-%20May%202010%20onwards.xlsx"
     }
   )
-  
+
   ivi_tmp_xlsx <- tempfile(fileext = ".xlsx")
   download.file(ivi_link, ivi_tmp_xlsx, mode = "wb")
-  
+
   ivi <- readxl::read_excel(ivi_tmp_xlsx, sheet = "Averaged") %>%
     unite(series, Level, State, region, ANZSCO_CODE) %>%
     select(-ANZSCO_TITLE) %>%
@@ -500,7 +512,7 @@ tryCatch({
       frequency = "Month",
       unit = "Advertisements"
     )
-  
+
   abs_lfs <- abs_lfs %>%
     bind_rows(ivi)
 },
