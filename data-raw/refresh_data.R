@@ -470,27 +470,27 @@ tryCatch({
     )
   )
 
-  tryCatch(
-    ivi_link <- read_html(
-      "https://www.jobsandskills.gov.au/work/internet-vacancy-index",
+  # Link for regional ivi information
+  ivi_link_region <- read_html(
+    "https://www.jobsandskills.gov.au/work/internet-vacancy-index",
 
-    ) %>%
-      html_elements("a.downloadLink") %>%
-      html_attr("href") %>%
-      stringr::str_subset("xlsx|XLSX") %>%
-      stringr::str_subset("regional|Regional|REGIONAL") %>%
-      paste0("https://www.jobsandskills.gov.au", .),
-    error = function(e){
-      message("Could not access jobsandskills.gov.au for link scraping - using old link")
-      message("Original error:\n", e)
-      ivi_link <- "https://www.jobsandskills.gov.au/sites/default/files/2023-03/IVI_DATA_regional%20-%20May%202010%20onwards.xlsx"
-    }
-  )
+  ) %>%
+    html_elements("a.downloadLink") %>%
+    html_attr("href") %>%
+    stringr::str_subset("xlsx|XLSX") %>%
+    stringr::str_subset("region|Region|REGION") %>%
+    paste0("https://www.jobsandskills.gov.au", .)
 
-  ivi_tmp_xlsx <- tempfile(fileext = ".xlsx")
-  download.file(ivi_link, ivi_tmp_xlsx, mode = "wb")
+  stopifnot(tools::file_ext(ivi_link_region) %in% c("xlsx", "XLSX"))
 
-  ivi <- readxl::read_excel(ivi_tmp_xlsx, sheet = "Averaged") %>%
+
+
+  # Download regional ivi to temporary diretory
+  ivi_region_tmp_xlsx <- tempfile(fileext = ".xlsx")
+  download.file(ivi_link_region, ivi_region_tmp_xlsx, mode = "wb")
+
+  # Clean and save regional ivi information
+  ivi_region <- readxl::read_excel(ivi_region_tmp_xlsx, sheet = "Averaged") %>%
     unite(series, Level, State, region, ANZSCO_CODE) %>%
     select(-ANZSCO_TITLE) %>%
     pivot_longer(
@@ -501,7 +501,7 @@ tryCatch({
     mutate(
       date = as.Date(as.numeric(date), origin = "1899-12-30"),
       series_id = sapply(series, rlang::hash),
-      table_no = "ivi",
+      table_no = "ivi_region",
       series_type = "Original",
       data_type = "FLOW",
       frequency = "Month",
@@ -509,16 +509,59 @@ tryCatch({
     )
 
   abs_lfs <- abs_lfs %>%
-    bind_rows(ivi)
+    bind_rows(ivi_region)
+
+  # Get-you a link for anzsco 4 IVI
+  ivi_link_anzsco4 <- read_html(
+    "https://www.jobsandskills.gov.au/work/internet-vacancy-index",
+
+  ) %>%
+    html_elements("a.downloadLink") %>%
+    html_attr("href") %>%
+    stringr::str_subset("xlsx|XLSX") %>%
+    stringr::str_subset("ANZSCO4|anzsco4") %>%
+    paste0("https://www.jobsandskills.gov.au", .)
+
+  stopifnot(tools::file_ext(ivi_link_anzsco4) %in% c("xlsx", "XLSX"))
+
+  # Download anzsco 4 ivi to temporary diretory
+  ivi_anzsco4_tmp_xlsx <- tempfile(fileext = ".xlsx")
+  download.file(ivi_link_anzsco4, ivi_anzsco4_tmp_xlsx, mode = "wb")
+
+
+  # Clean and save anzsco 4 ivi information
+  ivi_anzsco4 <- readxl::read_excel(
+    ivi_anzsco4_tmp_xlsx,
+    sheet = "4 digit 3 month average"
+    ) %>%
+    unite(series, state, ANZSCO_CODE, ANZSCO_TITLE) %>%
+    pivot_longer(
+      -series,
+      names_to = "date",
+      values_to = "value"
+    ) %>%
+    mutate(
+      date = as.Date(as.numeric(date), origin = "1899-12-30"),
+      series_id = sapply(series, rlang::hash),
+      table_no = "ivi_anzsco4",
+      series_type = "Original",
+      data_type = "FLOW",
+      frequency = "Month",
+      unit = "Advertisements"
+    )
+
+  abs_lfs <- abs_lfs %>%
+    bind_rows(ivi_anzsco4)
 },
 error = function(e){
-  message("IVI data did not parse. Original error:\n", e)
-  abs_lfs %>%
+  abs_lfs <- abs_lfs %>%
     bind_rows(
       old_data %>%
-        filter(table_no == "ivi")
+        filter(table_no %in% c("ivi_anzsco4", "ivi_region"))
     )
-}
+
+  message("IVI data did not parse. Original error:\n", e)
+  }
 )
 
 
