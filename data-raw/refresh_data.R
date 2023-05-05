@@ -501,6 +501,7 @@ tryCatch({
     mutate(
       date = as.Date(as.numeric(date), origin = "1899-12-30"),
       series_id = sapply(series, rlang::hash),
+      value = as.numeric(value),
       table_no = "ivi_region",
       series_type = "Original",
       data_type = "FLOW",
@@ -543,6 +544,7 @@ tryCatch({
     mutate(
       date = as.Date(as.numeric(date), origin = "1899-12-30"),
       series_id = sapply(series, rlang::hash),
+      value = as.numeric(value),
       table_no = "ivi_anzsco4",
       series_type = "Original",
       data_type = "FLOW",
