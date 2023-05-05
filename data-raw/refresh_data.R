@@ -329,13 +329,39 @@ lfs_ids <- c(
   "A85223482F",
   "A85223418L",
   "A84424601C",
-
   "A84423054K",
   "A84423265K",
   "A84423279X",
   "A84423363R",
   "A84423321T",
-  "A84423293V"
+  "A84423293V",
+  "A84423047L",
+  "A84423267R",
+  "A84423281K",
+  "A84423365V",
+  "A84423323W",
+  "A84423295X",
+  "A84090257V",
+  "A84090258W",
+  "A84090259X",
+  "A84090255R",
+  "A84090265V",
+  "A84090266W",
+  "A84090262L",
+  "A84090248T",
+  "A84090251F",
+  "A84090256T",
+  "A84090252J",
+  "A84090263R",
+  "A84090253K",
+  "A84090260J",
+  "A84090261K",
+  "A84090250C",
+  "A84090254L",
+  "A84090249V",
+  "A84090264T",
+  "A84932399X",
+  "A84423688L"
 )
 
 stopifnot(length(lfs_ids) > 290)
@@ -413,6 +439,14 @@ stopifnot(nrow(salm) > 20000)
 abs_lfs <- abs_lfs %>%
   bind_rows(salm)
 
+
+# Get population data
+pop <- readabs::read_abs_series('A2060844K') |>
+  select(all_of(names(old_data))) %>%
+  drop_na()
+
+abs_lfs <- abs_lfs %>%
+  bind_rows(pop)
 
 # Get ABS vacancy data
 
