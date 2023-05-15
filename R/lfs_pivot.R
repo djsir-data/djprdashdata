@@ -142,8 +142,8 @@ get_lfs_lm1 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
       ))
   }
 
-  # We want to aggregate up various categories - only interested in
-  # broad age, employed + unemployed totals (not FT/PT split)
+  # We want to aggregate up various categories - interested in
+  # broad age, employed + unemployed totals, looked for FT/PT work and NILF
   tidy_pivot <- tidy_pivot %>%
     dplyr::mutate(
       age = dplyr::case_when(
@@ -168,15 +168,11 @@ get_lfs_lm1 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
         TRUE ~ NA_character_
       ),
       indicator = dplyr::case_when(
-        indicator %in% c(
-          "Employed full-time ('000)",
-          "Employed part-time ('000)"
-        ) ~
-        "Employed",
-        grepl("Unemployed", .data$indicator) ~
-        "Unemployed",
-        grepl("NILF", .data$indicator) ~
-        "NILF",
+        indicator %in% c("Employed full-time ('000)",
+                         "Employed part-time ('000)") ~ "Employed",
+                  grepl("NILF", .data$indicator) ~ "NILF",
+        indicator == "Unemployed looked for full-time work ('000)" ~ "SearchedFT",
+        indicator == "Unemployed looked for only part-time work ('000)" ~ "SearchedPT",
         TRUE ~ NA_character_
       )
     )
@@ -204,11 +200,12 @@ get_lfs_lm1 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
       .data$age,
       .data$sex
     ) %>%
-    dplyr::summarise(`Unemployment rate` = 100 * sum(.data$value[.data$indicator == "Unemployed"] /
-      (
-        .data$value[.data$indicator == "Unemployed"] +
-          .data$value[.data$indicator == "Employed"]
-      ))) %>%
+    dplyr::summarise(`Unemployment rate` = 100 * sum(
+      (.data$value[.data$indicator == "SearchedFT"] + .data$value[.data$indicator == "SearchedPT"]) /
+        (.data$value[.data$indicator == "SearchedFT"] + .data$value[.data$indicator == "SearchedPT"] +
+           .data$value[.data$indicator == "Employed"])
+      )
+    ) %>%
     tidyr::pivot_longer(
       cols = .data$`Unemployment rate`,
       names_to = "indicator",
@@ -216,6 +213,26 @@ get_lfs_lm1 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
     ) %>%
     dplyr::ungroup() %>%
     dplyr::mutate(unit = "Percent") %>%
+    dplyr::bind_rows(age_sex)
+
+  # Calculate Unemployed
+  age_sex <- age_sex %>%
+    dplyr::group_by(
+      .data$date,
+      .data$age,
+      .data$sex
+    ) %>%
+    dplyr::summarise(`Unemployed` = sum(
+      .data$value[.data$indicator == "SearchedFT"] + .data$value[.data$indicator == "SearchedPT"]
+      )
+    ) %>%
+    tidyr::pivot_longer(
+      cols = .data$`Unemployed`,
+      names_to = "indicator",
+      values_to = "value"
+    ) %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(unit = "'000") %>%
     dplyr::bind_rows(age_sex)
 
   # Create series IDs
