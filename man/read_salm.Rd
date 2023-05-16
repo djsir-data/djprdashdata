@@ -19,5 +19,7 @@ Labour Market Information Portal. This function downloads and tidies that
 data.
 }
 \examples{
+\dontrun{
 read_salm()
+}
 }

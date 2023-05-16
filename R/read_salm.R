@@ -8,7 +8,9 @@
 #' the small area labour markt Excel file should be downloaded.
 #' @return A `tbl_df`
 #' @examples
+#' \dontrun{
 #' read_salm()
+#' }
 #' @export
 #' @importFrom dplyr .data
 #' @import djprdata
