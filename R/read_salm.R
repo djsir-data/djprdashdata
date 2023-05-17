@@ -12,10 +12,8 @@
 #' read_salm()
 #' }
 #' @export
-#' @importFrom dplyr .data
 #' @import djprdata
-
-
+#'
 read_salm <- function(file = tempfile(fileext = ".xlsx")) {
 
   # Scrape SALM  site
