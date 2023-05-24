@@ -8,25 +8,25 @@
 #' the small area labour markt Excel file should be downloaded.
 #' @return A `tbl_df`
 #' @examples
+#' \dontrun{
 #' read_salm()
+#' }
 #' @export
-#' @importFrom dplyr .data
 #' @import djprdata
-
-
+#'
 read_salm <- function(file = tempfile(fileext = ".xlsx")) {
 
   # Scrape SALM  site
-  url <- djprdata:::urls$read_salm
+  url <- "https://www.jobsandskills.gov.au/work/small-area-labour-markets"
 
-  lmip_page <- rvest::read_html(url)
+  # lmip_page <- rvest::read_html(url)
+  #
+  # link_text <- lmip_page %>%
+  #   rvest::html_nodes(".download-link") %>%
+  #   rvest::html_text()
 
-  link_text <- lmip_page %>%
-    rvest::html_nodes(".download-link") %>%
-    rvest::html_text()
-
-  links <- djprdata:::get_latest_download_url(djprdata:::urls$read_salm,
-                                              'salm-smoothed-sa2|salm-smoothed-lga')$url
+  links <- djprdata:::get_latest_download_url(url,
+                                              'SALM%20Smoothed%20SA2|SALM%20Smoothed%20LGA')$url
 
   salm <- purrr::map_dfr(c("sa2", "lga"),
                  read_salm_table,
@@ -36,16 +36,16 @@ read_salm <- function(file = tempfile(fileext = ".xlsx")) {
   salm <- salm %>%
     dplyr::mutate(series = paste(
       "SALM",
-      .data$area_type,
-      .data$area_code,
-      .data$area,
+      'area_type',
+      'area_code',
+      'area',
       sep = " ; "
     ),
     series_id = tolower(paste(
       "salm",
-      .data$area_type,
-      .data$area_code,
-      .data$area,
+      'area_type',
+      'area_code',
+      'area',
       sep = "_"
     )),
     series_type = "Seasonally Adjusted",
@@ -55,9 +55,9 @@ read_salm <- function(file = tempfile(fileext = ".xlsx")) {
     unit = "Percent"
     ) %>%
     dplyr::select(
-      .data$date, .data$value, .data$series,
-      .data$series_id, .data$series_type, .data$data_type,
-      .data$table_no, .data$frequency, .data$unit
+      'date', 'value', 'series',
+      'series_id', 'series_type', 'data_type',
+      'table_no', 'frequency', 'unit'
     )
 
   salm
@@ -66,12 +66,12 @@ read_salm <- function(file = tempfile(fileext = ".xlsx")) {
 
 read_salm_table <- function(area_type = "sa2", links, file) {
 
-  area_type_text <- dplyr::if_else(area_type == "sa2",
-                              "SALM SA2 Data",
-                              "SALM LGA Data")
+  # area_type_text <- dplyr::if_else(area_type == "sa2",
+  #                             "SALM SA2 Data",
+  #                             "SALM LGA Data")
 
   # Find which link on the page contains "small area labour market data
-  matching_link <- links[grepl(area_type, links) & grepl('\\.xlsx', links)]
+  matching_link <- links[grepl(area_type, links, ignore.case = TRUE) & grepl('\\.xlsx', links)]
 
   # Download the small labour market area data Excel file
 

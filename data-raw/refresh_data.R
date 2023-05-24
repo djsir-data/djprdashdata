@@ -1,6 +1,7 @@
 pkgload::load_all()
 library(dplyr)
 library(tidyr)
+library(rvest)
 
 options(timeout = 180)
 
@@ -328,13 +329,43 @@ lfs_ids <- c(
   "A85223482F",
   "A85223418L",
   "A84424601C",
-
   "A84423054K",
   "A84423265K",
   "A84423279X",
   "A84423363R",
   "A84423321T",
-  "A84423293V"
+  "A84423293V",
+  "A84423047L",
+  "A84423267R",
+  "A84423281K",
+  "A84423365V",
+  "A84423323W",
+  "A84423295X",
+  "A84090257V",
+  "A84090258W",
+  "A84090259X",
+  "A84090255R",
+  "A84090265V",
+  "A84090266W",
+  "A84090262L",
+  "A84090248T",
+  "A84090251F",
+  "A84090256T",
+  "A84090252J",
+  "A84090263R",
+  "A84090253K",
+  "A84090260J",
+  "A84090261K",
+  "A84090250C",
+  "A84090254L",
+  "A84090249V",
+  "A84090264T",
+  "A84932399X",
+  "A84423576V",
+  "A84423800A",
+  "A84423695K",
+  "A84423696L",
+  "A84423688L"
 )
 
 stopifnot(length(lfs_ids) > 290)
@@ -411,6 +442,135 @@ stopifnot(nrow(salm) > 20000)
 
 abs_lfs <- abs_lfs %>%
   bind_rows(salm)
+
+
+# Get population data
+pop <- readabs::read_abs_series('A2060844K') |>
+  select(all_of(names(old_data))) %>%
+  drop_na()
+
+abs_lfs <- abs_lfs %>%
+  bind_rows(pop)
+
+# Get ABS vacancy data
+
+vac <- readabs::read_abs(cat_no = "6354.0") %>%
+  filter(
+    series_type == "Original"
+    ) %>%
+  select(all_of(names(old_data))) %>%
+  drop_na()
+
+abs_lfs <- abs_lfs %>%
+  bind_rows(vac)
+
+
+# Get JSA Internet vacancy index
+tryCatch({
+
+  httr::set_config(
+    httr::user_agent(
+      "Mozilla/5.0 (Windows NT 5.1; rv:66.0) Gecko/20100101 Firefox/66.0"
+    )
+  )
+
+  # Link for regional ivi information
+  ivi_link_region <- read_html(
+    "https://www.jobsandskills.gov.au/work/internet-vacancy-index",
+
+  ) %>%
+    html_elements("a.downloadLink") %>%
+    html_attr("href") %>%
+    stringr::str_subset("xlsx|XLSX") %>%
+    stringr::str_subset("region|Region|REGION") %>%
+    paste0("https://www.jobsandskills.gov.au", .)
+
+  stopifnot(tools::file_ext(ivi_link_region) %in% c("xlsx", "XLSX"))
+
+
+
+  # Download regional ivi to temporary diretory
+  ivi_region_tmp_xlsx <- tempfile(fileext = ".xlsx")
+  download.file(ivi_link_region, ivi_region_tmp_xlsx, mode = "wb")
+
+  # Clean and save regional ivi information
+  ivi_region <- readxl::read_excel(ivi_region_tmp_xlsx, sheet = "Averaged") %>%
+    unite(series, Level, State, region, ANZSCO_CODE) %>%
+    select(-ANZSCO_TITLE) %>%
+    pivot_longer(
+      -series,
+      names_to = "date",
+      values_to = "value"
+    ) %>%
+    mutate(
+      date = as.Date(as.numeric(date), origin = "1899-12-30"),
+      series_id = sapply(series, rlang::hash),
+      value = as.numeric(value),
+      table_no = "ivi_region",
+      series_type = "Original",
+      data_type = "FLOW",
+      frequency = "Month",
+      unit = "Advertisements"
+    )
+
+  abs_lfs <- abs_lfs %>%
+    bind_rows(ivi_region)
+
+  # Get-you a link for anzsco 4 IVI
+  ivi_link_anzsco4 <- read_html(
+    "https://www.jobsandskills.gov.au/work/internet-vacancy-index",
+
+  ) %>%
+    html_elements("a.downloadLink") %>%
+    html_attr("href") %>%
+    stringr::str_subset("xlsx|XLSX") %>%
+    stringr::str_subset("ANZSCO4|anzsco4") %>%
+    paste0("https://www.jobsandskills.gov.au", .)
+
+  stopifnot(tools::file_ext(ivi_link_anzsco4) %in% c("xlsx", "XLSX"))
+
+  # Download anzsco 4 ivi to temporary diretory
+  ivi_anzsco4_tmp_xlsx <- tempfile(fileext = ".xlsx")
+  download.file(ivi_link_anzsco4, ivi_anzsco4_tmp_xlsx, mode = "wb")
+
+
+  # Clean and save anzsco 4 ivi information
+  ivi_anzsco4 <- readxl::read_excel(
+    ivi_anzsco4_tmp_xlsx,
+    sheet = "4 digit 3 month average"
+    ) %>%
+    unite(series, state, ANZSCO_CODE, ANZSCO_TITLE) %>%
+    pivot_longer(
+      -series,
+      names_to = "date",
+      values_to = "value"
+    ) %>%
+    mutate(
+      date = as.Date(as.numeric(date), origin = "1899-12-30"),
+      series_id = sapply(series, rlang::hash),
+      value = as.numeric(value),
+      table_no = "ivi_anzsco4",
+      series_type = "Original",
+      data_type = "FLOW",
+      frequency = "Month",
+      unit = "Advertisements"
+    )
+
+  abs_lfs <- abs_lfs %>%
+    bind_rows(ivi_anzsco4)
+},
+error = function(e){
+  abs_lfs <- abs_lfs %>%
+    bind_rows(
+      old_data %>%
+        filter(table_no %in% c("ivi_anzsco4", "ivi_region"))
+    )
+
+  message("IVI data did not parse. Original error:\n", e)
+  }
+)
+
+
 
 # Check if data updated -----
 new_rows <- nrow(abs_lfs)

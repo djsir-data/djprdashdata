@@ -12,11 +12,6 @@ on:
     branches:
       - master
       - main
-      - renv
-  pull_request:
-    branches:
-      - main
-      - master
 
 jobs:
   refresh-data:

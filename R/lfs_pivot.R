@@ -14,6 +14,10 @@ get_tidy_lfs_pivots <- function(path = Sys.getenv("R_READABS_PATH", unset = temp
     path = path
   )
 
+  lfs_nm2 <- get_lfs_nm2(
+    path = path
+  )
+
   lfs_um2 <- get_lfs_um2(
     path = path
   )
@@ -32,6 +36,7 @@ get_tidy_lfs_pivots <- function(path = Sys.getenv("R_READABS_PATH", unset = temp
 
   dplyr::bind_rows(
     lfs_lm1,
+    lfs_nm2,
     lfs_eq03,
     lfs_um2,
     lfs_rm1,
@@ -92,7 +97,7 @@ get_lfs_em2b <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
                                             .data$actual_hours_bin,
                                             .data$reason_fewer,
                                             .data$state,
-                                    sep = "_"))) %>%
+                                            sep = "_"))) %>%
     dplyr::select(-.data$actual_hours_bin,
                   -.data$reason_fewer)
 
@@ -104,7 +109,7 @@ get_lfs_em2b <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
 get_lfs_lm1 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
                         all_states = FALSE) {
   raw_pivot <- get_lfs_pivot("LM1",
-    path = path
+                             path = path
   )
 
   names(raw_pivot) <- c(
@@ -172,11 +177,11 @@ get_lfs_lm1 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
           "Employed full-time ('000)",
           "Employed part-time ('000)"
         ) ~
-        "Employed",
+          "Employed",
         grepl("Unemployed", .data$indicator) ~
-        "Unemployed",
+          "Unemployed",
         grepl("NILF", .data$indicator) ~
-        "NILF",
+          "NILF",
         TRUE ~ NA_character_
       )
     )
@@ -205,10 +210,10 @@ get_lfs_lm1 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
       .data$sex
     ) %>%
     dplyr::summarise(`Unemployment rate` = 100 * sum(.data$value[.data$indicator == "Unemployed"] /
-      (
-        .data$value[.data$indicator == "Unemployed"] +
-          .data$value[.data$indicator == "Employed"]
-      ))) %>%
+                                                       (
+                                                         .data$value[.data$indicator == "Unemployed"] +
+                                                           .data$value[.data$indicator == "Employed"]
+                                                       ))) %>%
     tidyr::pivot_longer(
       cols = .data$`Unemployment rate`,
       names_to = "indicator",
@@ -222,28 +227,28 @@ get_lfs_lm1 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
   age_gcc <- age_gcc %>%
     dplyr::mutate(
       series_id = paste(.data$age,
-        .data$gcc_restofstate,
-        .data$indicator,
-        sep = "_"
+                        .data$gcc_restofstate,
+                        .data$indicator,
+                        sep = "_"
       ) %>% tolower(),
       series = paste(.data$indicator,
-        .data$gcc_restofstate,
-        .data$age,
-        sep = " ; "
+                     .data$gcc_restofstate,
+                     .data$age,
+                     sep = " ; "
       )
     )
 
   age_sex <- age_sex %>%
     dplyr::mutate(
       series_id = paste(.data$age,
-        .data$sex,
-        .data$indicator,
-        sep = "_"
+                        .data$sex,
+                        .data$indicator,
+                        sep = "_"
       ) %>% tolower(),
       series = paste(.data$indicator,
-        .data$sex,
-        .data$age,
-        sep = " ; "
+                     .data$sex,
+                     .data$age,
+                     sep = " ; "
       )
     )
 
@@ -265,6 +270,54 @@ get_lfs_lm1 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
 
   tidy_pivot
 }
+
+#' Download and tidy data cube nm2 from detailed Labour Force
+#' @noRd
+get_lfs_nm2 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
+                        all_states = FALSE) {
+  raw_pivot <- get_lfs_pivot("NM2",
+                             path = path
+  )
+
+  names(raw_pivot) <- c("date",
+                        "state",
+                        "indicator",
+                        "value")
+
+  if (isFALSE(all_states)) {
+    tidy_pivot <- raw_pivot %>%
+      # Drop non-Victoria
+      dplyr::filter(.data$state == "Victoria"
+      )
+  }
+
+  tidy_pivot <- tidy_pivot %>%
+    dplyr::mutate(
+      series_id = paste(.data$state,
+                        .data$indicator,
+                        sep = "_"
+      ) %>% tolower(),
+      series = paste(.data$indicator,
+                     .data$state,
+                     sep = " ; "
+      )
+    )
+
+  tidy_pivot <- tidy_pivot %>%
+    dplyr::mutate(
+      series_type = "Original",
+      table_no = "NM2",
+      data_type = "STOCK",
+      frequency = "Month",
+      unit = "000",
+      cat_no = "6291.0.55.001"
+    )
+
+  tidy_pivot
+}
+
+
+
 
 #' Download and tidy data cube um2 from detailed Labour Force
 #' @noRd
@@ -302,14 +355,14 @@ get_lfs_um2 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
   tidy_pivot <- tidy_pivot %>%
     dplyr::mutate(
       series_id = paste(.data$indicator,
-        .data$state,
-        .data$duration,
-        sep = "_"
+                        .data$state,
+                        .data$duration,
+                        sep = "_"
       ) %>% tolower(),
       series = paste(.data$indicator,
-        .data$state,
-        .data$duration,
-        sep = " ; "
+                     .data$state,
+                     .data$duration,
+                     sep = " ; "
       ),
       series_type = "Original",
       table_no = "UM2",
@@ -364,9 +417,9 @@ get_lfs_eq08 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
       occupation == '7' ~ 'Machinery Operators and Drivers',
       occupation == '8' ~ 'Labourers'
     )) %>%
-  dplyr::group_by(.data$date,.data$occupation,.data$sex,
-          .data$indicator, .data$state
-  ) %>%
+    dplyr::group_by(.data$date,.data$occupation,.data$sex,
+                    .data$indicator, .data$state
+    ) %>%
     dplyr::summarise(value= sum(value)) %>%
     dplyr::ungroup()
 
@@ -382,16 +435,16 @@ get_lfs_eq08 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
   tidy_pivot <- tidy_pivot %>%
     dplyr::mutate(
       series_id = paste(.data$sex,
-        .data$state,
-        .data$occupation,
-        .data$indicator,
-        sep = "_"
+                        .data$state,
+                        .data$occupation,
+                        .data$indicator,
+                        sep = "_"
       ) %>% tolower(),
       series = paste(.data$indicator,
-        .data$state,
-        .data$sex,
-        .data$occupation,
-        sep = " ; "
+                     .data$state,
+                     .data$sex,
+                     .data$occupation,
+                     sep = " ; "
       ),
       series_type = "Original",
       table_no = "EQ08",
@@ -467,7 +520,7 @@ get_lfs_eq03 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
         "Rest of Vic."
       ))
 
-    }
+  }
 
   tidy_pivot
 
@@ -651,14 +704,14 @@ get_lfs_rm1 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
   gcc <- gcc %>%
     dplyr::mutate(
       series_id = paste(.data$age,
-        .data$indicator,
-        .data$gcc_restofstate,
-        sep = "_"
+                        .data$indicator,
+                        .data$gcc_restofstate,
+                        sep = "_"
       ) %>% tolower(),
       series = paste(.data$age,
-        .data$indicator,
-        .data$gcc_restofstate,
-        sep = " ; "
+                     .data$indicator,
+                     .data$gcc_restofstate,
+                     sep = " ; "
       )
     )
 
@@ -673,7 +726,7 @@ get_lfs_rm1 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
     dplyr::ungroup() %>%
     dplyr::mutate(sa4 = as.character(.data$sa4)) %>%
     dplyr::left_join(sa4_lookup,
-      by = c("sa4" = "sa4_code")
+                     by = c("sa4" = "sa4_code")
     ) %>%
     # dplyr::select(date, age, indicator, sa4 = sa4_name, value) %>%
     dplyr::filter(.data$age == "15-24")
@@ -687,9 +740,9 @@ get_lfs_rm1 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
         sep = "_"
       ) %>% tolower(),
       series = paste(.data$age,
-        .data$indicator,
-        .data$sa4_name,
-        sep = " ; "
+                     .data$indicator,
+                     .data$sa4_name,
+                     sep = " ; "
       )
     )
 
@@ -714,12 +767,12 @@ get_lfs_rm1 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
   if (isFALSE(all_states)) {
     tidy_pivot <- tidy_pivot %>%
       dplyr::filter(grepl("Melbourne|Vic", .data$gcc_restofstate) |
-        .data$gcc_restofstate == "")
+                      .data$gcc_restofstate == "")
   }
 
   tidy_pivot <- tidy_pivot %>%
     dplyr::filter(substr(.data$sa4, 1, 1) == "2" |
-      .data$sa4 == "")
+                    .data$sa4 == "")
 
   tidy_pivot <- tidy_pivot %>%
     dplyr::select(-.data$sa4) %>%
@@ -727,6 +780,7 @@ get_lfs_rm1 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
 
   tidy_pivot
 }
+
 
 #' Download and tidy ABS pivot cubes
 #'
