@@ -16,7 +16,6 @@ RoxygenNote: 7.1.2
 Imports: 
     dplyr (>= 1.0.5),
     djprdata,
-    djprConnect,
     here,
     purrr,
     qs,
@@ -29,10 +28,14 @@ Imports:
     rvest,
     stringr,
     janitor,
-    lubridate
+    lubridate,
+    assertthat,
+    config,
+    DBI,
+    glue,
+    RPostgres
 Remotes: 
-    djsir-data/djprdata,
-    djsir-data/djprConnect
+    djsir-data/djprdata
 Depends: 
     R (>= 2.10)
 Suggests: 

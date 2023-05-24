@@ -421,7 +421,7 @@ data_updated <- !exists("old_rows") || (old_rows != new_rows)
 # Perform checks and save ----
 
 try({
-  con <- djprConnect::djpr_connect(use_config = TRUE)
+  con <- djpr_connect(use_config = TRUE)
 })
 
 if (data_updated) {
