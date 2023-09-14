@@ -1,6 +1,6 @@
 Package: djprdashdata
 Title: Store ABS Labour Force Data for use in Dashboards 
-Version: 0.0.3.900
+Version: 0.1.0
 Authors@R: 
     person(given = "Matt",
            family = "Cowgill",
@@ -15,7 +15,6 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Imports: 
     dplyr (>= 1.0.5),
-    djprdata,
     here,
     purrr,
     qs,
@@ -30,8 +29,7 @@ Imports:
     janitor,
     lubridate
 Remotes: 
-    mattcowgill/readabs,
-    djsir-data/djprdata
+    mattcowgill/readabs
 Depends: 
     R (>= 2.10)
 Suggests: 

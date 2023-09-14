@@ -421,27 +421,6 @@ lfs_pivot <- lfs_pivot %>%
 abs_lfs <- lfs_pivot %>%
   bind_rows(abs_lfs)
 
-# Get jobactive data -----
-jobactive <- read_jobactive() %iferror%
-  old_data %>%
-  filter(table_no == "jobactive")
-
-stopifnot(length(jobactive) == 9)
-stopifnot(nrow(jobactive) > 8000)
-
-abs_lfs <- abs_lfs %>%
-  bind_rows(jobactive)
-
-# Get SALM data -----
-salm <- read_salm() %iferror%
-  old_data %>%
-  filter(table_no == "SALM")
-
-stopifnot(length(salm) == 9)
-stopifnot(nrow(salm) > 20000)
-
-abs_lfs <- abs_lfs %>%
-  bind_rows(salm)
 
 
 # Get population data
@@ -452,8 +431,8 @@ pop <- readabs::read_abs_series('A2060844K') |>
 abs_lfs <- abs_lfs %>%
   bind_rows(pop)
 
-# Get ABS vacancy data
 
+# Get ABS vacancy data
 vac <- readabs::read_abs(cat_no = "6354.0") %>%
   filter(
     series_type == "Original"
