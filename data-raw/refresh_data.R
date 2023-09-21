@@ -17,6 +17,16 @@ old_data <- abs_lfs
 detach("file:R/sysdata.rda")
 
 
+## Define Database connection Early so we know if there will be issues
+con <- tryCatch({djprConnect::djpr_connect(use_config = TRUE)},
+                error = function(e){
+                  message('try connection again')
+                  djprConnect::djpr_connect(use_config = TRUE)
+                })
+
+message(class(con))
+
+
 # Load LFS data -----
 # Define ABS series IDs of interest -----
 lfs_ids <- c(
@@ -558,12 +568,6 @@ new_rows <- nrow(abs_lfs)
 data_updated <- !exists("old_rows") || (old_rows != new_rows)
 
 # Perform checks and save ----
-
-con <- tryCatch({djprConnect::djpr_connect(use_config = TRUE)},
-                error = function(e){
-                  message('try connection again')
-                  djprConnect::djpr_connect(use_config = TRUE)
-                })
 
 if (data_updated) {
   test_results <- c(
