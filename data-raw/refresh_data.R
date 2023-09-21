@@ -559,9 +559,11 @@ data_updated <- !exists("old_rows") || (old_rows != new_rows)
 
 # Perform checks and save ----
 
-try({
-  con <- djprConnect::djpr_connect(use_config = TRUE)
-})
+con <- tryCatch({djprConnect::djpr_connect(use_config = TRUE)},
+                error = function(e){
+                  message('try connection again')
+                  djprConnect::djpr_connect(use_config = TRUE)
+                })
 
 if (data_updated) {
   test_results <- c(
