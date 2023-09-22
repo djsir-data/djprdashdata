@@ -24,7 +24,12 @@ con <- tryCatch({djprConnect::djpr_connect(use_config = TRUE)},
                   djprConnect::djpr_connect(use_config = TRUE)
                 })
 
-message(class(con))
+try({
+  message(class(con))
+  message(DBI::dbListTables(con))
+})
+
+
 
 
 # Load LFS data -----
