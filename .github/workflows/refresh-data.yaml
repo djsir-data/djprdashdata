@@ -49,8 +49,6 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ env.AWS_DEFAULT_REGION }}
 
-      - name: Install Db connection package
-        run: Rscript -e 'remotes::install_github("djsir-data/djprConnect", auth_token = Sys.getenv("GITHUB_PAT"))'
       - name: Get data
         run: Rscript -e 'source(here::here("data-raw", "refresh_data.R"), echo = TRUE)'
       - name: Render README
