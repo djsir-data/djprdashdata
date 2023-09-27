@@ -14,22 +14,33 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Imports: 
+    assertthat, 
+    config,
+    DBI,
+    djprConnect,
     dplyr (>= 1.0.5),
+    glue,
     here,
+    janitor,
+    lubridate,
+    pkgload,
     purrr,
     qs,
     readabs (>= 0.4.8.902),
     rlang,
     tidyr,
     readxl,
-    zip,
-    tibble,
+    rmarkdown,
+    roxygen2,
+    RPostgres,
     rvest,
     stringr,
-    janitor,
-    lubridate
+    tibble,
+    usethis,
+    zip
 Remotes: 
-    mattcowgill/readabs
+    mattcowgill/readabs,
+    djsir-data/djprConnect
 Depends: 
     R (>= 2.10)
 Suggests: 

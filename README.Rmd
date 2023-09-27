@@ -17,7 +17,8 @@ knitr::opts_chunk$set(
 
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/djpr-data/djprdashdata/workflows/R-CMD-check/badge.svg)](https://github.com/djpr-data/djprdashdata/actions) [![refresh-data](https://github.com/djpr-data/djprdashdata/workflows/refresh-data/badge.svg)](https://github.com/djpr-data/djprdashdata/actions)
+[![R-CMD-check](https://github.com/djpr-data/djprdashdata/workflows/R-CMD-check/badge.svg)](https://github.com/djpr-data/djprdashdata/actions) 
+[![refresh-data](https://github.com/djpr-data/djprdashdata/workflows/refresh-data/badge.svg)](https://github.com/djpr-data/djprdashdata/actions)
 
 <!-- badges: end -->
 
@@ -28,7 +29,7 @@ This R package contains functions to download, tidy, and store data from the ABS
 
 The `data-raw/refresh_data.R` file contains code to download public data using the package's functions. The data itself is saved in `data-raw`.
 
-This public data is used in the DJPR Jobs Dashboard. See:
+This public data is used in the DJSIR Jobs Dashboard. See:
 
 -   The [`djprlabourdash`](https://github.com/djpr-data/djprlabourdash) GitHub repo for the Jobs Dashboard code; and
 
