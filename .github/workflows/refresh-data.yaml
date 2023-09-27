@@ -12,14 +12,13 @@ on:
     branches:
       - master
       - main
-      - migrate-renv
 
 jobs:
   refresh-data:
     runs-on: macOS-latest
     env:
       R_CONFIG_ACTIVE: github
-      GITHUB_PAT: ${{ secrets.MRJ_TOKEN }}
+      GITHUB_PAT: ${{ secrets.DJPRDASHDATA_PAT }}
       PG_MASTER_USER: ${{ secrets.PG_MASTER_USER }}
       PG_MASTER_PW: ${{ secrets.PG_MASTER_PW }}
       PG_READ_OPEN_USER: ${{ secrets.PG_READ_OPEN_USER }}
@@ -35,7 +34,7 @@ jobs:
       - uses: r-lib/actions/setup-pandoc@v1
       - name: Get Github action IP
         id: ip
-        uses: haythem/public-ip@v1.2
+        uses: haythem/public-ip@v1.3
 
       - name: Set AWS environment variables
         run: |
@@ -55,8 +54,8 @@ jobs:
         run: Rscript -e 'rmarkdown::render(here::here("README.Rmd"))'
       - name: Commit
         run: |
-          git config --global user.name 'Matt Cowgill'
-          git config --global user.email 'mattcowgill@github.com'
+          git config --global user.name 'Henry McMillan'
+          git config --global user.email '96028056+Henry-DJPR@users.noreply.github.com'
           git add .
           git commit -m 'refreshing data' || echo "No changes to commit"
           git push --force origin main || echo "No changes to commit"
