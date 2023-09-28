@@ -18,7 +18,7 @@ the ABS and other public data sources.
 The `data-raw/refresh_data.R` file contains code to download public data
 using the package’s functions. The data itself is saved in `data-raw`.
 
-This public data is used in the DJPR Jobs Dashboard. See:
+This public data is used in the DJSIR Jobs Dashboard. See:
 
   - The [`djprlabourdash`](https://github.com/djpr-data/djprlabourdash)
     GitHub repo for the Jobs Dashboard code; and
@@ -30,10 +30,10 @@ This public data is used in the DJPR Jobs Dashboard. See:
 The `refresh_data.R` script is executed on a schedule using GitHub
 Actions.
 
-The last time the script was run to check for new data was 2023-09-22
-14:05:30.
+The last time the script was run to check for new data was 2023-09-28
+12:01:53.
 
-The last time new data was found was 2023-09-21 11:37:56.
+The last time new data was found was 2023-09-28 12:01:53.
 
 ## Modifying the data stored in this repository
 
