@@ -31,7 +31,7 @@ jobs:
 
       - name: Get IVI Link
         run: |
-          nero=$(curl -I https://www.djsir.vic.gov.au')
+          nero=$(curl -I https://www.djsir.vic.gov.au)
           link=$(curl https://www.jobsandskills.gov.au/work/internet-vacancy-index --http1.1 | grep xlsx | grep region | grep -o -E 'href="([^"#]+)"' | grep -o -E '"([^"#]+)"')
           echo "IVI_LINK=$link" >> $GITHUB_ENV
 
