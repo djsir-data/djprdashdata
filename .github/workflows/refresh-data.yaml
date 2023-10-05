@@ -15,7 +15,7 @@ on:
 
 jobs:
   refresh-data:
-    runs-on: macOS-latest
+    runs-on: ubuntu-latest
     env:
       R_CONFIG_ACTIVE: github
       GITHUB_PAT: ${{ secrets.DJPRDASHDATA_PAT }}
