@@ -32,7 +32,7 @@ jobs:
       - name: curl
         uses: enflo/curl-action@master
         with:
-          curl: {{ 'curl -v https://www.google.com' }}
+          curl: 'curl -v https://www.google.com'
 
       - name: Run test
         run: |
