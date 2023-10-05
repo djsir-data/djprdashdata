@@ -33,7 +33,7 @@ jobs:
       - name: Set proxy
         run: |
           echo "HTTP_PROXY=http://10.10.10.10:3128" >> $GITHUB_ENV
-          echo "HTTPS_PROXY=http://10.10.10.10:3128" >> $GITHUB_ENV
+          echo "HTTPS_PROXY=https://10.10.10.10:3128" >> $GITHUB_ENV
 
       - name: Run test
         run: |
