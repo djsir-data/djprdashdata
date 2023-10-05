@@ -28,10 +28,16 @@ jobs:
         run: |
          sudo apt-get update
          sudo apt-get install -y curl libcurl4-openssl-dev
+      - uses: shivammathur/setup-php@v2
+
       - name: Set proxy
         run: |
           echo "HTTP_PROXY=http://10.10.10.10:3128" >> $GITHUB_ENV
           echo "HTTPS_PROXY=http://10.10.10.10:3128" >> $GITHUB_ENV
+
+      - name: Run test
+        run: |
+          curl -v https://www.google.com
       - name: Get IVI Link
         run: |
           test=$(curl -I http://www.google.com/ --verbose)
