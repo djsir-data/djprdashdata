@@ -24,6 +24,11 @@ jobs:
       PG_READ_OPEN_USER: ${{ secrets.PG_READ_OPEN_USER }}
       PG_READ_OPEN_PW: ${{ secrets.PG_READ_OPEN_PW }}
     steps:
+      - name: Installing curl
+        run: |
+         sudo apt-get update
+         sudo apt-get install -y curl libcurl libcurl4-openssl-dev
+
       - name: Get IVI Link
         run: |
           curl -v --stderr - https://www.jobsandskills.gov.au/work/internet-vacancy-index | grep xlsx | grep region | grep -o -E 'href="([^"#]+)"' | grep -o -E '"([^"#]+)"'
