@@ -31,7 +31,7 @@ jobs:
 
       - name: Get IVI Link
         run: |
-          link=$(curl --location https://www.jobsandskills.gov.au/work/internet-vacancy-index | grep xlsx | grep region | grep -o -E 'href="([^"#]+)"' | grep -o -E '"([^"#]+)"')
+          link=$(curl --location https://www.jobsandskills.gov.au/work/internet-vacancy-index --http1.1 | grep xlsx | grep region | grep -o -E 'href="([^"#]+)"' | grep -o -E '"([^"#]+)"')
           echo "IVI_LINK=$link" >> $GITHUB_ENV
 
       - uses: actions/checkout@v3
