@@ -39,7 +39,7 @@ jobs:
           r-version: 'renv' # The R version to download (if necessary) and use.
       - uses: r-lib/actions/setup-renv@v2
 
-      - uses: r-lib/actions/setup-pandoc@v1
+      - uses: r-lib/actions/setup-pandoc@v2
       - name: Get Github action IP
         id: ip
         uses: haythem/public-ip@v1.3
