@@ -469,18 +469,24 @@ tryCatch({
   )
 
   # Link for regional ivi information
-  ivi_link_region <- read_html(
-    "https://www.jobsandskills.gov.au/work/internet-vacancy-index",
+  if (Sys.getenv('IVI_REGIONS') == ''){
 
-  ) %>%
-    html_elements("a.downloadLink") %>%
-    html_attr("href") %>%
-    stringr::str_subset("xlsx|XLSX") %>%
-    stringr::str_subset("region|Region|REGION") %>%
-    paste0("https://www.jobsandskills.gov.au", .)
+    ivi_link_region <- read_html(
+      "https://www.jobsandskills.gov.au/work/internet-vacancy-index",
+    ) %>%
+      html_elements("a.downloadLink") %>%
+      html_attr("href") %>%
+      stringr::str_subset("xlsx|XLSX") %>%
+      stringr::str_subset("region|Region|REGION") %>%
+      paste0("https://www.jobsandskills.gov.au", .)
+
+  } else {
+
+    ivi_link_region = Sys.getenv('IVI_REGIONS')
+
+  }
 
   stopifnot(tools::file_ext(ivi_link_region) %in% c("xlsx", "XLSX"))
-
 
 
   # Download regional ivi to temporary diretory
@@ -511,15 +517,24 @@ tryCatch({
     bind_rows(ivi_region)
 
   # Get-you a link for anzsco 4 IVI
-  ivi_link_anzsco4 <- read_html(
-    "https://www.jobsandskills.gov.au/work/internet-vacancy-index",
+  if (Sys.getenv('IVI_ANZSCO4') == ''){
 
-  ) %>%
-    html_elements("a.downloadLink") %>%
-    html_attr("href") %>%
-    stringr::str_subset("xlsx|XLSX") %>%
-    stringr::str_subset("ANZSCO4|anzsco4") %>%
-    paste0("https://www.jobsandskills.gov.au", .)
+    ivi_link_anzsco4 <- read_html(
+      "https://www.jobsandskills.gov.au/work/internet-vacancy-index",
+
+    ) %>%
+      html_elements("a.downloadLink") %>%
+      html_attr("href") %>%
+      stringr::str_subset("xlsx|XLSX") %>%
+      stringr::str_subset("ANZSCO4|anzsco4") %>%
+      paste0("https://www.jobsandskills.gov.au", .)
+
+  } else {
+
+    ivi_link_anzsco4 <- Sys.getenv('IVI_ANZSCO4')
+
+  }
+
 
   stopifnot(tools::file_ext(ivi_link_anzsco4) %in% c("xlsx", "XLSX"))
 
