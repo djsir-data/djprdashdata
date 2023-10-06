@@ -323,18 +323,6 @@
       ],
       "Hash": "cf6b206a045a684728c3267ef7596190"
     },
-    "djprConnect": {
-      "Package": "djprConnect",
-      "Version": "0.1.2",
-      "Source": "GitHub",
-      "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteRepo": "djprConnect",
-      "RemoteUsername": "djsir-data",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "0f29e1e1a8a84c9051718ae0d59f7eabb223f4ea",
-      "Hash": "53956538659c76392be029a11dc22ec0"
-    },
     "dplyr": {
       "Package": "dplyr",
       "Version": "1.1.3",

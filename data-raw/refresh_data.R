@@ -18,10 +18,10 @@ detach("file:R/sysdata.rda")
 
 
 ## Define Database connection Early so we know if there will be issues
-con <- tryCatch({djprConnect::djpr_connect(use_config = TRUE)},
+con <- tryCatch({djpr_connect(use_config = TRUE)},
                 error = function(e){
                   message('try connection again')
-                  djprConnect::djpr_connect(use_config = TRUE)
+                  djpr_connect(use_config = TRUE)
                 })
 
 try({
