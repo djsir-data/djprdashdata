@@ -477,7 +477,7 @@ tryCatch({
       html_elements("a.downloadLink") %>%
       html_attr("href") %>%
       stringr::str_subset("xlsx|XLSX") %>%
-      stringr::str_subset("region|Region|REGION") %>%
+      stringr::str_subset("(?i)region") %>%
       paste0("https://www.jobsandskills.gov.au", .)
 
   } else {
@@ -495,6 +495,7 @@ tryCatch({
 
   # Clean and save regional ivi information
   ivi_region <- readxl::read_excel(ivi_region_tmp_xlsx, sheet = "Averaged") %>%
+    filter(State == 'VIC') %>%
     unite(series, Level, State, region, ANZSCO_CODE) %>%
     select(-ANZSCO_TITLE) %>%
     pivot_longer(
@@ -526,7 +527,7 @@ tryCatch({
       html_elements("a.downloadLink") %>%
       html_attr("href") %>%
       stringr::str_subset("xlsx|XLSX") %>%
-      stringr::str_subset("ANZSCO4|anzsco4") %>%
+      stringr::str_subset("(?i)anzsco4") %>%
       paste0("https://www.jobsandskills.gov.au", .)
 
   } else {
@@ -546,8 +547,8 @@ tryCatch({
   # Clean and save anzsco 4 ivi information
   ivi_anzsco4 <- readxl::read_excel(
     ivi_anzsco4_tmp_xlsx,
-    sheet = "4 digit 3 month average"
-    ) %>%
+    sheet = "4 digit 3 month average") %>%
+    filter(state == 'VIC') %>%
     unite(series, state, ANZSCO_CODE, ANZSCO_TITLE) %>%
     pivot_longer(
       -series,
