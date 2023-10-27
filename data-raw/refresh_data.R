@@ -468,23 +468,44 @@ tryCatch({
     )
   )
 
-  # Link for regional ivi information
-  if (Sys.getenv('IVI_REGIONS') == ''){
 
-    ivi_link_region <- read_html(
-      "https://www.jobsandskills.gov.au/work/internet-vacancy-index",
-    ) %>%
-      html_elements("a.downloadLink") %>%
-      html_attr("href") %>%
-      stringr::str_subset("xlsx|XLSX") %>%
-      stringr::str_subset("(?i)region") %>%
-      paste0("https://www.jobsandskills.gov.au", .)
+  ## GET IVI LINKS TO DATA
+  if (any(grepl('IVI', Sys.getenv()))) {
+
+    # GET LINKS FROM ENV (GITHUB ACTIONS)
+    ivi_link_region = Sys.getenv('IVI_REGIONS')
+    ivi_link_anzsco4 <- Sys.getenv('IVI_ANZSCO4')
+    ivi_link_skills <- Sys.getenv('IVI_SKILLS')
 
   } else {
 
-    ivi_link_region = Sys.getenv('IVI_REGIONS')
+    # GET LINKS FROM WEBSITE (LOCAL MACHINE)
+    links <- read_html("https://www.jobsandskills.gov.au/work/internet-vacancy-index") %>%
+      html_elements("a.downloadLink") %>%
+      html_attr("href") %>%
+      stringr::str_subset("xlsx|XLSX") %>%
+      stringr::str_subset("(?i)anzsco4|region|skill") %>%
+      paste0("https://www.jobsandskills.gov.au", .)
+
+    for (link in links) {
+      name <- case_when(
+        grepl('region', link, ignore.case = TRUE) ~ 'region',
+        grepl('anzsco4', link, ignore.case = TRUE) ~ 'anzsco4',
+        grepl('skill', link, ignore.case = TRUE) ~ 'skills'
+      )
+
+      assign(
+        x = paste0('ivi_link_', name),
+        value = link
+      )
+
+    }
 
   }
+
+
+  ##  IVI REGIONS
+  # Link for regional ivi information
 
   stopifnot(tools::file_ext(ivi_link_region) %in% c("xlsx", "XLSX"))
 
@@ -517,25 +538,9 @@ tryCatch({
   abs_lfs <- abs_lfs %>%
     bind_rows(ivi_region)
 
+
+  ## IVI ANZSCO4
   # Get-you a link for anzsco 4 IVI
-  if (Sys.getenv('IVI_ANZSCO4') == ''){
-
-    ivi_link_anzsco4 <- read_html(
-      "https://www.jobsandskills.gov.au/work/internet-vacancy-index",
-
-    ) %>%
-      html_elements("a.downloadLink") %>%
-      html_attr("href") %>%
-      stringr::str_subset("xlsx|XLSX") %>%
-      stringr::str_subset("(?i)anzsco4") %>%
-      paste0("https://www.jobsandskills.gov.au", .)
-
-  } else {
-
-    ivi_link_anzsco4 <- Sys.getenv('IVI_ANZSCO4')
-
-  }
-
 
   stopifnot(tools::file_ext(ivi_link_anzsco4) %in% c("xlsx", "XLSX"))
 
@@ -571,23 +576,6 @@ tryCatch({
 
 
   ###   IVI SKILLS
-  if (Sys.getenv('IVI_SKILLS') == ''){
-
-    ivi_link_skills <- read_html(
-      "https://www.jobsandskills.gov.au/work/internet-vacancy-index",
-
-    ) %>%
-      html_elements("a.downloadLink") %>%
-      html_attr("href") %>%
-      stringr::str_subset("xlsx|XLSX") %>%
-      stringr::str_subset("(?i)skill") %>%
-      paste0("https://www.jobsandskills.gov.au", .)
-
-  } else {
-
-    ivi_link_skills <- Sys.getenv('IVI_SKILLS')
-
-  }
 
   # Download ivi skills to temporary diretory
   ivi_skills_tmp_xlsx <- tempfile(fileext = ".xlsx")
