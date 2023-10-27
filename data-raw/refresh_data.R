@@ -581,7 +581,7 @@ tryCatch({
   ivi_skills_tmp_xlsx <- tempfile(fileext = ".xlsx")
   download.file(ivi_link_skills, ivi_skills_tmp_xlsx, mode = "wb")
 
-  skillz <- read_excel(ivi_skills_tmp_xlsx, sheet = "Seasonally Adjusted") %>%
+  skillz <- readxl::read_excel(ivi_skills_tmp_xlsx, sheet = "Seasonally Adjusted") %>%
     filter(State == "VIC", Level == 2) %>%
     unite(series, Level, State, Title, Skill_level) %>%
     pivot_longer(
@@ -621,6 +621,7 @@ new_rows <- nrow(abs_lfs)
 # `old_rows` is normally loaded from `sysdata.rda` and will not exist
 # if that file was cleared.
 #data_updated <- !exists("old_rows") || (old_rows != new_rows)
+data_updated <- TRUE
 
 # Perform checks and save ----
 
