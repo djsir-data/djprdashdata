@@ -496,8 +496,7 @@ tryCatch({
   # Clean and save regional ivi information
   ivi_region <- readxl::read_excel(ivi_region_tmp_xlsx, sheet = "Averaged") %>%
     filter(State == 'VIC') %>%
-    unite(series, Level, State, region, ANZSCO_CODE) %>%
-    select(-ANZSCO_TITLE) %>%
+    unite(series, Level, State, region, ANZSCO_CODE, ANZSCO_TITLE) %>%
     pivot_longer(
       -series,
       names_to = "date",
