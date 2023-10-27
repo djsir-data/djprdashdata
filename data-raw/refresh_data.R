@@ -633,6 +633,7 @@ new_rows <- nrow(abs_lfs)
 # `old_rows` is normally loaded from `sysdata.rda` and will not exist
 # if that file was cleared.
 #data_updated <- !exists("old_rows") || (old_rows != new_rows)
+data_updated <- TRUE
 
 # Perform checks and save ----
 
