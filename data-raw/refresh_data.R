@@ -513,7 +513,6 @@ tryCatch({
       unit = "Advertisements"
     )
 
-  print(ivi_region$series[1])
 
   abs_lfs <- abs_lfs %>%
     bind_rows(ivi_region)
@@ -569,6 +568,52 @@ tryCatch({
 
   abs_lfs <- abs_lfs %>%
     bind_rows(ivi_anzsco4)
+
+
+  ###   IVI SKILLS
+  if (Sys.getenv('IVI_SKILLS') == ''){
+
+    ivi_link_skills <- read_html(
+      "https://www.jobsandskills.gov.au/work/internet-vacancy-index",
+
+    ) %>%
+      html_elements("a.downloadLink") %>%
+      html_attr("href") %>%
+      stringr::str_subset("xlsx|XLSX") %>%
+      stringr::str_subset("(?i)skill") %>%
+      paste0("https://www.jobsandskills.gov.au", .)
+
+  } else {
+
+    ivi_link_skills <- Sys.getenv('IVI_SKILLS')
+
+  }
+
+  # Download ivi skills to temporary diretory
+  ivi_skills_tmp_xlsx <- tempfile(fileext = ".xlsx")
+  download.file(ivi_link_skills, ivi_skills_tmp_xlsx, mode = "wb")
+
+  skillz <- read_excel(ivi_skills_tmp_xlsx, sheet = "Seasonally Adjusted") %>%
+    filter(State == "VIC", Level == 2) %>%
+    unite(series, Level, State, Title, Skill_level) %>%
+    pivot_longer(
+      -series,
+      names_to = "date",
+      values_to = "value"
+    ) %>%
+    mutate(date = as.Date(as.numeric(date), origin = "1899-12-30"),
+           series_id = sapply(series, rlang::hash),
+           value = as.numeric(value),
+           table_no = "ivi_skills",
+           series_type = "Original",
+           data_type = "FLOW",
+           frequency = "Month",
+           unit = "Advertisements")
+
+  abs_lfs <- abs_lfs %>%
+    bind_rows(skillz)
+
+
 },
 error = function(e){
   abs_lfs <- abs_lfs %>%
