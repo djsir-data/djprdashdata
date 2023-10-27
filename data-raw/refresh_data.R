@@ -513,6 +513,8 @@ tryCatch({
       unit = "Advertisements"
     )
 
+  print(ivi_region$series[1])
+
   abs_lfs <- abs_lfs %>%
     bind_rows(ivi_region)
 
