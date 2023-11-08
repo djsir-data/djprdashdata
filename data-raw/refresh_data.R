@@ -516,7 +516,8 @@ tryCatch({
 
   # Clean and save regional ivi information
   ivi_region <- readxl::read_excel(ivi_region_tmp_xlsx, sheet = "Averaged") %>%
-    filter(State == 'VIC') %>%
+    filter(State == 'VIC',
+           Level == 3) %>%
     unite(series, Level, State, region, ANZSCO_CODE, ANZSCO_TITLE) %>%
     pivot_longer(
       -series,
@@ -553,7 +554,8 @@ tryCatch({
   ivi_anzsco4 <- readxl::read_excel(
     ivi_anzsco4_tmp_xlsx,
     sheet = "4 digit 3 month average") %>%
-    filter(state == 'VIC') %>%
+    filter(state == 'VIC',
+           nchar(ANZSCO_CODE) == 4) %>%
     unite(series, state, ANZSCO_CODE, ANZSCO_TITLE) %>%
     pivot_longer(
       -series,
@@ -582,7 +584,8 @@ tryCatch({
   download.file(ivi_link_skills, ivi_skills_tmp_xlsx, mode = "wb")
 
   skillz <- readxl::read_excel(ivi_skills_tmp_xlsx, sheet = "Seasonally Adjusted") %>%
-    filter(State == "VIC", Level == 2) %>%
+    filter(State == "VIC",
+           Level == 2) %>%
     unite(series, Level, State, Title, Skill_level) %>%
     pivot_longer(
       -series,
