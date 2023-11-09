@@ -512,7 +512,10 @@ tryCatch({
 
   # Download regional ivi to temporary diretory
   ivi_region_tmp_xlsx <- tempfile(fileext = ".xlsx")
-  download.file(ivi_link_region, ivi_region_tmp_xlsx, mode = "wb")
+  #download.file(ivi_link_region, ivi_region_tmp_xlsx, mode = "wb")
+  resp <- httr::GET(ivi_link_region, httr::write_disk(ivi_region_tmp_xlsx, overwrite=TRUE))
+  status <- httr::http_status(resp)
+  print(status)
 
   # Clean and save regional ivi information
   ivi_region <- readxl::read_excel(ivi_region_tmp_xlsx, sheet = "Averaged") %>%
