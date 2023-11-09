@@ -513,7 +513,9 @@ tryCatch({
   # Download regional ivi to temporary diretory
   ivi_region_tmp_xlsx <- tempfile(fileext = ".xlsx")
   #download.file(ivi_link_region, ivi_region_tmp_xlsx, mode = "wb")
-  resp <- httr::GET(ivi_link_region, httr::write_disk(ivi_region_tmp_xlsx, overwrite=TRUE))
+  resp <- httr::GET(ivi_link_region,
+                    httr::write_disk(ivi_region_tmp_xlsx, overwrite=TRUE),
+                    httr::config(verbose=TRUE, http_version=2, forbid_reuse=T))
   status <- httr::http_status(resp)
   print(status)
 
@@ -610,7 +612,7 @@ error = function(e){
   abs_lfs <- abs_lfs %>%
     bind_rows(
       old_data %>%
-        filter(table_no %in% c("ivi_anzsco4", "ivi_region"))
+        filter(table_no %in% c("ivi_anzsco4", "ivi_region", "ivi_skills"))
     )
 
   message("IVI data did not parse. Original error:\n", e)
