@@ -515,7 +515,7 @@ tryCatch({
   #download.file(ivi_link_region, ivi_region_tmp_xlsx, mode = "wb")
   resp <- httr::GET(ivi_link_region,
                     httr::write_disk(ivi_region_tmp_xlsx, overwrite=TRUE),
-                    httr::config(verbose=TRUE, http_version=1, forbid_reuse=T))
+                    httr::config(verbose=TRUE, http_version=1, forbid_reuse=F))
   status <- httr::http_status(resp)
   print(status)
 
