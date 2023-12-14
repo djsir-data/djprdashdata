@@ -31,6 +31,7 @@ jobs:
 
       - name: Installing extra system dependencies
         run: |
+         sudo apt-get update
          sudo apt-get install -y --fix-missing libcurl4-openssl-dev
 
       - uses: r-lib/actions/setup-r@v2
