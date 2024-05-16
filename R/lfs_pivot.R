@@ -531,7 +531,7 @@ get_lfs_eq03 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
 #' @noRd
 get_lfs_rm1 <- function(path = Sys.getenv("R_READABS_PATH", unset = tempdir()),
                         all_states = TRUE) {
-  raw_pivot <- get_lfs_pivot(cube = "RM1")
+  raw_pivot <- get_lfs_pivot(cube = "^RM1")
 
   names(raw_pivot) <- c(
     "date",
