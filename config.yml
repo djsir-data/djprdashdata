@@ -10,7 +10,7 @@ shinyapps:
   dataconnection:
     use_DBcache: FALSE
     dbname: "opendata"
-    host: 'sppdatarepo1.caz6tvdhkmqm.ap-southeast-2.rds.amazonaws.com'
+    host: 'sppdatarepo1.mgt.djsir.vic.gov.au'
     user:  !expr Sys.getenv("PG_READ_OPEN_USER")
     password: !expr Sys.getenv("PG_READ_OPEN_PW")
     port: 5432
@@ -18,7 +18,7 @@ github:
   dataconnection:
     use_DBcache: FALSE
     dbname: "opendata"
-    host: 'sppdatarepo1.caz6tvdhkmqm.ap-southeast-2.rds.amazonaws.com'
+    host: 'sppdatarepo1.mgt.djsir.vic.gov.au'
     user:  !expr Sys.getenv("PG_MASTER_USER")
     password: !expr Sys.getenv("PG_MASTER_PW")
     port: 5432
