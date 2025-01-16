@@ -30,10 +30,10 @@ This public data is used in the DJSIR Jobs Dashboard. See:
 The `refresh_data.R` script is executed on a schedule using GitHub
 Actions.
 
-The last time the script was run to check for new data was 2025-01-09
-13:33:26.
+The last time the script was run to check for new data was 2025-01-16
+13:03:11.
 
-The last time new data was found was 2025-01-09 13:33:26.
+The last time new data was found was 2025-01-16 13:03:11.
 
 ## Modifying the data stored in this repository
 
